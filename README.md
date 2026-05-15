@@ -39,9 +39,12 @@ git clone https://github.com/akira-toriyama/capsule-corp
 cd ..
 
 just init config/capsule-corp   # .west/config に config パスを記録
-just build                      # firmware ビルド
-just flash -r                   # ビルド + フラッシュ
+just build all                  # firmware ビルド（全ターゲット）
+just flash all -r               # ビルド + フラッシュ
 ```
+
+`just build all` で `build.yaml` の全ターゲット（`imprint_left` / `imprint_right`）。
+個別なら `just build imprint_left` 等。
 
 ## skhd セットアップ
 
