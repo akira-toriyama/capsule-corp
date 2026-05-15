@@ -46,20 +46,30 @@ export BRACKET_OPEN=0x21   # [
 export BRACKET_CLOSE=0x1E  # ]
 
 
-# ---- skhdrc 生成 ----
+# ---- skhdrc 生成 → 検証 → デプロイ ----
+# source (skhdrc.tmpl) は repo 内、生成物は ~/.config/skhd/skhdrc へ配置。
+# 一旦 temp に生成して検証し、OK の時だけデプロイ先へ移動する
+# (壊れた設定が稼働中の skhdrc を上書きしない)。
+OUT="$HOME/.config/skhd/skhdrc"
+
 # envsubst は指定変数のみ置換 (jq フィルタの $array 等を守るため)
 VARS='${X_Q} ${X_W} ${X_E} ${X_R} ${X_T} ${X_A} ${X_S} ${X_D} ${X_F} ${X_G} ${X_Z} ${X_X} ${X_C} ${X_V} ${X_B}'
 VARS="$VARS "'${X_Y} ${X_U} ${X_I} ${X_O} ${X_P} ${X_H} ${X_J} ${X_K} ${X_L} ${X_N} ${X_M} ${X_1} ${X_2} ${X_3} ${X_4}'
 VARS="$VARS "'${BRACKET_OPEN} ${BRACKET_CLOSE} ${MODS_LL} ${MODS_LM} ${MODS_RM} ${MODS_RR}'
-envsubst "$VARS" < skhdrc.tmpl > skhdrc
 
-# ---- 検証 + reload ----
-errors=$(timeout 1 skhd -V -c skhdrc 2>&1 | grep "error" || true)
-if [ -z "$errors" ]; then
-    skhd --reload 2>/dev/null || skhd --restart-service
-    echo "skhdrc generated and reloaded"
-else
-    echo "skhdrc has parse errors, NOT reloading:"
+tmp=$(mktemp)
+trap 'rm -f "$tmp"' EXIT
+envsubst "$VARS" < skhdrc.tmpl > "$tmp"
+
+errors=$(timeout 1 skhd -V -c "$tmp" 2>&1 | grep "error" || true)
+if [ -n "$errors" ]; then
+    echo "skhdrc has parse errors, NOT deploying:"
     echo "$errors"
     exit 1
 fi
+
+mkdir -p "$(dirname "$OUT")"
+mv "$tmp" "$OUT"
+trap - EXIT
+skhd --reload 2>/dev/null || skhd --restart-service
+echo "skhdrc deployed to $OUT and reloaded"
