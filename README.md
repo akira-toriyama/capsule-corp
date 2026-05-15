@@ -1,37 +1,12 @@
-# cyboard-imprint-zmk
+# capsule-corp
 
-[Cyboard Imprint](https://docs.cyboard.digital/)（左手トラックボール付きスプリット, board: `assimilator-bt`）の
-ZMK 設定。日本語入力（macOS の かな / 英数）と記号入力を主眼に組んだ独自キーマップ。
+入力デバイス設定の monorepo。
 
-## Keymap
+- [Cyboard Imprint](https://cyboard.digital/products/imprint) の ZMK 設定（ルート = ZMK user-config）
+- [skhd.zig](https://github.com/jackielii/skhd.zig) の設定（`host/skhd/`）
 
-![keymap](keymap-drawer/imprint.svg)
-
-SVG は push 時に [`.github/workflows/draw-keymap.yml`](.github/workflows/draw-keymap.yml) が
-[keymap-drawer](https://github.com/caksoylar/keymap-drawer) で自動生成・コミットします。
-
-## レイヤー構成
-
-| layer | display | 役割 |
-|---|---|---|
-| `DEFAULT` | Base | アルファベット + 親指クラスタ |
-| `NUMBER` / `SYMBOL1` / `SYMBOL2` / `FUNCTION` | Num / Sym1 / Sym2 / Fn | 左親指 `MO_LAYER` で momentary |
-| `LEFT/RIGHT/UP/DOWN_ARROW` | ← → ↑ ↓ | `ar_*` の hold-tap が一時的に潜るナビ層 (HOME/END/PgUp/PgDn) |
-| `T_LL` / `T_LM` / `T_RM` / `T_RR` | LL/LM/RM/RR | 右上親指 chord 層（後述） |
-
-## 主な仕組み
-
-- **IME 連動 letter morph (`al_a`〜`al_z`)** — tap=素のアルファベット / Shift=英数へ切替えてから大文字。
-  日本語入力中でも Shift 始動の語が正しく英字になる。
-- **`en_*` マクロ** — 「英数へ切替 → 数字/記号」を 1 アクションで送出。IME 状態に依らず記号を確定入力。
-  表示文字は `config/eiji_macros.dtsi` の `disp:[X]` が唯一のソースで、keymap-drawer 用の
-  `raw_binding_map` は [`scripts/gen_eiji_drawer_map.py`](scripts/gen_eiji_drawer_map.py) が生成
-  （[`verify-eiji-sync.yml`](.github/workflows/verify-eiji-sync.yml) が同期を検証）。
-- **combo** — 左親指 2 キー＝かな / 右親指 2 キー＝英数（hold-tap で hold=修飾子）。
-- **親指上段 (TU) chord** — `T_*_LAYER` を起動しつつ、各層が「右 4 修飾子のうち 3 つ」を
-  base key に付けて送出（欠ける 1 つが層ごとに異なり OS 側で識別可能）。
-- **親指下段 (TD)** — mod-tap：Shift/⏎・Cmd/⌫・Alt/⎋・Ctrl/␣。
-- **左トラックボール** — `input-processors` で常時スクロール化。
+ZMK が送る chord（親指ホールドで「右 4 修飾子のうち 3 つ」+ base key）を
+skhd 側で受けて処理する。両者の対応は `host/skhd/render.sh` がブリッジする。
 
 ## ファイル構成
 
@@ -41,17 +16,44 @@ SVG は push 時に [`.github/workflows/draw-keymap.yml`](.github/workflows/draw
 | `config/keymap_defines.h` | 集約ヘッダ → `layers.h` / `keypos.h` / `behaviors_gen.h` |
 | `config/{imprint_behaviors,letter_morphs,arrow_behaviors,macros,eiji_macros,combos}.dtsi` | behavior / macro / combo |
 | `keymap_drawer.config.yaml` | keymap-drawer 表示設定 |
+| `host/skhd/render.sh` | ZMK 論理定義 → skhd kVK へ変換し `~/.config/skhd/skhdrc` を生成 |
+| `host/skhd/skhdrc.tmpl` | skhd 設定テンプレート（`${VAR}` を render.sh が置換） |
 
-## Build / Flash
+## firmware ビルド
 
-```bash
-# zmk-workspace/ で（nix devshell が just / west を提供）
-just build imprint_left      # imprint_right も同様
+push 時に GitHub Actions（`.github/workflows/build.yml`）が `.uf2` を生成する。
 
-# 対象の半身をブートローダーモードにして UF2 をコピー
-cp ~/Documents/zmk/zmk-workspace/firmware/imprint_left-assimilator-bt.uf2 '/Volumes/NO NAME/'
+### ローカルビルド
+
+ビルドハーネスに [`kot149/zmk-workspace`](https://github.com/kot149/zmk-workspace)
+（nix + just + flash）を使う。**workspace は使い捨て可能**で、canonical は
+このリポジトリのみ。消しても以下で完全再構築できる:
+
+```sh
+git clone https://github.com/kot149/zmk-workspace
+cd zmk-workspace
+# nix + direnv セットアップは kot149/zmk-workspace README 参照
+
+cd config
+git clone https://github.com/akira-toriyama/capsule-corp
+cd ..
+
+just init config/capsule-corp   # .west/config に config パスを記録
+just build                      # firmware ビルド
+just flash -r                   # ビルド + フラッシュ
 ```
 
-> ZMK は upstream（`zmkfirmware/zmk@main`）を参照。以前は macOS Mission Control
-> 誤発火回避の mod-morph patch を fork で当てていたが、emacs 風ショートカット廃止に
-> 伴い不要となり撤去した（実機検証済み）。
+## skhd セットアップ
+
+このリポジトリを clone した任意の場所から:
+
+```sh
+host/skhd/render.sh   # ~/.config/skhd/skhdrc を生成・検証・reload
+```
+
+clone 位置に依存しない。生成物（skhdrc）はリポジトリに残らず
+`~/.config/skhd/` へデプロイされる。壊れた設定は稼働中の skhdrc を上書きしない。
+
+## Keymap
+
+![keymap](keymap-drawer/imprint.svg)
