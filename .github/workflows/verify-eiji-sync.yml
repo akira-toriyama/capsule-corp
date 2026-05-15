@@ -1,0 +1,28 @@
+name: Verify eiji map sync
+
+# config/eiji_macros.dtsi を単一ソースとし、keymap_drawer.config.yaml の
+# en_* ブロックがそこから生成された状態と一致するかを検証する。
+on:
+  push:
+    paths:
+      - config/eiji_macros.dtsi
+      - keymap_drawer.config.yaml
+      - scripts/gen_eiji_drawer_map.py
+      - .github/workflows/verify-eiji-sync.yml
+  pull_request:
+    paths:
+      - config/eiji_macros.dtsi
+      - keymap_drawer.config.yaml
+      - scripts/gen_eiji_drawer_map.py
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Check eiji_* mapping is in sync
+        run: python3 scripts/gen_eiji_drawer_map.py --check

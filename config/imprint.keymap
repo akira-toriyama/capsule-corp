@@ -1,0 +1,162 @@
+#include <input/processors.dtsi>
+#include <dt-bindings/zmk/input_transform.h>
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/pointing.h>
+#include <dt-bindings/zmk/rgb.h>
+
+#include "keymap_defines.h"
+
+// https://github.com/zmkfirmware/zmk/pull/1811
+&mt {
+  hold-while-undecided;
+};
+
+// 左手トラックボール (常時スクロール化)
+&trackball_central_listener {
+  input-processors = TRACKBALL_SCROLL_PROCESSORS;
+};
+
+/ {
+  chosen {
+    zmk,matrix-transform = &imprint_letters_only_full_bottom_row;
+  };
+  combos {
+    compatible = "zmk,combos";
+    #include "combos.dtsi"
+  };
+  macros {
+    #include "macros.dtsi"
+  };
+  behaviors {
+    #include "imprint_behaviors.dtsi"
+  };
+  keymap {
+    compatible = "zmk,keymap";
+
+    DEFAULT_LAYER {
+      display-name = "Base";
+      bindings = <
+        &none       &al_q               &al_w              &al_e              &al_r             &al_t                    &al_y  &al_u     &al_i     &al_o      &al_p       &none
+        &kp SPACE   &al_a               &al_s              &al_d              &al_f             &al_g                    &al_h  &al_j     &al_k     &al_l      &kp X_1     &kp BACKSPACE
+        &kp ESCAPE  &al_z               &al_x              &al_c              &al_v             &al_b                    &al_n  &al_m     &ar_up    &kp TAB    &kp DELETE  &kp RETURN
+        &none       MO_LAYER(FUNCTION)  MO_LAYER(SYMBOL2)  MO_LAYER(SYMBOL1)  MO_LAYER(NUMBER)                                  &ar_left  &ar_down  &ar_right  &none       &none
+                                                               TU_LL  TU_LM  &none                    &none  TU_RM  TU_RR
+                                                               TD_LL  TD_LM  &none                    &none  TD_RM  TD_RR
+      >;
+    };
+    NUMBER_LAYER {
+      display-name = "Num";
+      bindings = <
+        &none  &none  &none  &none  &none  &none                    &none  &en_7  &en_8  &en_9  &none  &none
+        &none  &none  &none  &none  &none  &none                    &none  &en_4  &en_5  &en_6  &none  &none
+        &none  &none  &none  &none  &none  &none                    &en_0  &en_1  &en_2  &en_3  &none  &none
+        FOOTER_TD
+      >;
+    };
+    SYMBOL1_LAYER {
+      display-name = "Sym1";
+      bindings = <
+        &none  &none  &none  &none  &none  &none                    &en_under  &en_pipe   &en_amp    &en_excl   &en_q      &none
+        &none  &none  &none  &none  &none  &none                    &en_hash   &en_comma  &en_dot    &en_semi   &en_colon  &en_at
+        &none  &none  &none  &none  &none  &none                    &en_dq     &en_sq     &en_grave  &en_slash  &en_bsl    &none
+        FOOTER_TD
+      >;
+    };
+    SYMBOL2_LAYER {
+      display-name = "Sym2";
+      bindings = <
+        &none  &none  &none  &none  &none  &none                    &en_caret  &en_lt    &en_gt     &en_lbkt  &en_rbkt  &none
+        &none  &none  &none  &none  &none  &none                    &en_eq     &en_plus  &en_minus  &en_ast   &en_pct   &en_dollar
+        &none  &none  &none  &none  &none  &none                    &en_tilde  &en_lpar  &en_rpar   &en_lbrc  &en_rbrc  &none
+        FOOTER_TD
+      >;
+    };
+    FUNCTION_LAYER {
+      display-name = "Fn";
+      bindings = <
+        &none  &none  &none  &none  &none  &none                    &none  &kp F1  &kp F2   &kp F3   &kp F4   &none
+        &none  &none  &none  &none  &none  &none                    &none  &kp F5  &kp F6   &kp F7   &kp F8   &none
+        &none  &none  &none  &none  &none  &none                    &none  &kp F9  &kp F10  &kp F11  &kp F12  &none
+        FOOTER_TD
+      >;
+    };
+    LEFT_ARROW_LAYER {
+      display-name = "←";
+      bindings = <
+        ROW_NONE
+        ROW_NONE
+        ROW_NONE
+        &none  &none  &none  &none  &none                    &none  &kp HOME  &none  &none  &none
+        THUMB_TD
+      >;
+    };
+    RIGHT_ARROW_LAYER {
+      display-name = "→";
+      bindings = <
+        ROW_NONE
+        ROW_NONE
+        ROW_NONE
+        &none  &none  &none  &none  &none                    &none  &kp END  &none  &none  &none
+        THUMB_TD
+      >;
+    };
+    UP_ARROW_LAYER {
+      display-name = "↑";
+      bindings = <
+        ROW_NONE
+        ROW_NONE
+        ROW_NONE
+        &none  &none  &none  &none  &none                    &kp PAGE_UP  &none  &none  &none  &none
+        THUMB_TD
+      >;
+    };
+    DOWN_ARROW_LAYER {
+      display-name = "↓";
+      bindings = <
+        ROW_NONE
+        ROW_NONE
+        ROW_NONE
+        &none  &none  &none  &none  &none                    &kp PAGE_DOWN  &none  &none  &none  &none
+        THUMB_TD
+      >;
+    };
+    T_LL_LAYER {
+      display-name = "LL";
+      bindings = <
+        &none  &ll_kp Q  &ll_kp W  &ll_kp E  &ll_kp R  &ll_kp T                    &ll_kp Y  &ll_kp U  &ll_kp I    &ll_kp O    &ll_kp P    &none
+        &none  &ll_kp A  &ll_kp S  &ll_kp D  &ll_kp F  &ll_kp G                    &ll_kp H  &ll_kp J  &ll_kp K    &ll_kp L    &ll_kp X_1  &none
+        &none  &ll_kp Z  &ll_kp X  &ll_kp C  &ll_kp V  &ll_kp B                    &ll_kp N  &ll_kp M  &ll_kp X_2  &ll_kp X_3  &ll_kp X_4  &none
+        FOOTER_NONE
+      >;
+    };
+    T_LM_LAYER {
+      display-name = "LM";
+      bindings = <
+        &none  &lm_kp Q  &lm_kp W  &lm_kp E  &lm_kp R  &lm_kp T                    &lm_kp Y  &lm_kp U  &lm_kp I    &lm_kp O    &lm_kp P    &none
+        &none  &lm_kp A  &lm_kp S  &lm_kp D  &lm_kp F  &lm_kp G                    &lm_kp H  &lm_kp J  &lm_kp K    &lm_kp L    &lm_kp X_1  &none
+        &none  &lm_kp Z  &lm_kp X  &lm_kp C  &lm_kp V  &lm_kp B                    &lm_kp N  &lm_kp M  &lm_kp X_2  &lm_kp X_3  &lm_kp X_4  &none
+        FOOTER_NONE
+      >;
+    };
+    T_RM_LAYER {
+      display-name = "RM";
+      bindings = <
+        &none  &rm_kp Q  &rm_kp W  &rm_kp E  &rm_kp R  &rm_kp T                    &rm_kp Y  &rm_kp U  &rm_kp I    &rm_kp O    &rm_kp P    &none
+        &none  &rm_kp A  &rm_kp S  &rm_kp D  &rm_kp F  &rm_kp G                    &rm_kp H  &rm_kp J  &rm_kp K    &rm_kp L    &rm_kp X_1  &none
+        &none  &rm_kp Z  &rm_kp X  &rm_kp C  &rm_kp V  &rm_kp B                    &rm_kp N  &rm_kp M  &rm_kp X_2  &rm_kp X_3  &rm_kp X_4  &none
+        FOOTER_NONE
+      >;
+    };
+    T_RR_LAYER {
+      display-name = "RR";
+      bindings = <
+        &none  &rr_kp Q  &rr_kp W  &rr_kp E  &rr_kp R  &rr_kp T                    &rr_kp Y  &rr_kp U  &rr_kp I    &rr_kp O    &rr_kp P    &none
+        &none  &rr_kp A  &rr_kp S  &rr_kp D  &rr_kp F  &rr_kp G                    &rr_kp H  &rr_kp J  &rr_kp K    &rr_kp L    &rr_kp X_1  &none
+        &none  &rr_kp Z  &rr_kp X  &rr_kp C  &rr_kp V  &rr_kp B                    &rr_kp N  &rr_kp M  &rr_kp X_2  &rr_kp X_3  &rr_kp X_4  &none
+        FOOTER_NONE
+      >;
+    };
+  };
+};

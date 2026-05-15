@@ -1,0 +1,21 @@
+name: Draw keymap
+
+on:
+  push:
+    paths:
+      - config/*.keymap
+      - config/*.dtsi
+      - config/*.h
+      - config/imprint.json
+      - keymap_drawer.config.yaml
+      - .github/workflows/draw-keymap.yml
+  workflow_dispatch:
+
+jobs:
+  draw:
+    permissions:
+      contents: write
+    uses: caksoylar/keymap-drawer/.github/workflows/draw-zmk.yml@main
+    with:
+      commit_message: ":bento:`x.x.o`: keymap-drawer の SVG を更新"
+      amend_commit: false

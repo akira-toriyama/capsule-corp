@@ -1,0 +1,11 @@
+// behaviors { } ブロックの中身。imprint.keymap から #include して使う。
+// マクロ (HOLD_TAP_HP200) は keymap_defines.h で定義。
+
+    // ==== IME hold-tap (combos.dtsi の ime_kana / ime_eiji 経由で発火) ====
+    HOLD_TAP_HP200(ime_kana, &kana)
+    HOLD_TAP_HP200(ime_eiji, &eiji)
+
+    // ==== letter / arrow mod-morph ====
+    #include "letter_morphs.dtsi"
+    #include "arrow_behaviors.dtsi"
+

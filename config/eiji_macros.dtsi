@@ -1,0 +1,57 @@
+// EIJI 切替 → 数字 / 記号キー用の専用 behavior 群
+// macros { } ブロック内に #include して使う
+// EN_MACRO マクロは keymap_defines.h で定義
+//
+// 各行末の `disp:[X]` が keymap-drawer 上の表示文字 (= 唯一のソース)。
+// keymap_drawer.config.yaml の raw_binding_map の en_* ブロックは
+// scripts/gen_eiji_drawer_map.py がこのファイルから自動生成する
+// (CI: .github/workflows/verify-eiji-sync.yml が同期を検証)。
+// 追加・削除・リネーム時はこのファイルだけ編集し、スクリプトを再実行する。
+
+    // EIJI 切替 → 数字キー（NUMBER_LAYER 用）
+    EN_MACRO(en_0, N0)  // disp:[0]
+    EN_MACRO(en_1, N1)  // disp:[1]
+    EN_MACRO(en_2, N2)  // disp:[2]
+    EN_MACRO(en_3, N3)  // disp:[3]
+    EN_MACRO(en_4, N4)  // disp:[4]
+    EN_MACRO(en_5, N5)  // disp:[5]
+    EN_MACRO(en_6, N6)  // disp:[6]
+    EN_MACRO(en_7, N7)  // disp:[7]
+    EN_MACRO(en_8, N8)  // disp:[8]
+    EN_MACRO(en_9, N9)  // disp:[9]
+
+    // EIJI 切替 → 記号キー（SYMBOL1_LAYER 用）
+    EN_MACRO(en_under, UNDERSCORE)     // disp:[_]
+    EN_MACRO(en_pipe,  PIPE)           // disp:[|]
+    EN_MACRO(en_amp,   AMPERSAND)      // disp:[&]
+    EN_MACRO(en_excl,  EXCLAMATION)    // disp:[!]
+    EN_MACRO(en_q,     QUESTION)       // disp:[?]
+    EN_MACRO(en_hash,  HASH)           // disp:[#]
+    EN_MACRO(en_comma, COMMA)          // disp:[,]
+    EN_MACRO(en_dot,   PERIOD)         // disp:[.]
+    EN_MACRO(en_semi,  SEMICOLON)      // disp:[;]
+    EN_MACRO(en_colon, COLON)          // disp:[:]
+    EN_MACRO(en_at,    AT_SIGN)        // disp:[@]
+    EN_MACRO(en_dq,    DOUBLE_QUOTES)  // disp:["]
+    EN_MACRO(en_sq,    SINGLE_QUOTE)   // disp:[']
+    EN_MACRO(en_grave, GRAVE)          // disp:[`]
+    EN_MACRO(en_slash, SLASH)          // disp:[/]
+    EN_MACRO(en_bsl,   BACKSLASH)      // disp:[\]
+
+    // EIJI 切替 → 記号キー（SYMBOL2_LAYER 用）
+    EN_MACRO(en_caret,  CARET)         // disp:[^]
+    EN_MACRO(en_lt,     LESS_THAN)     // disp:[<]
+    EN_MACRO(en_gt,     GREATER_THAN)  // disp:[>]
+    EN_MACRO(en_lbkt,   LEFT_BRACKET)  // disp:[[]
+    EN_MACRO(en_rbkt,   RIGHT_BRACKET) // disp:[]]
+    EN_MACRO(en_eq,     EQUAL)         // disp:[=]
+    EN_MACRO(en_plus,   PLUS)          // disp:[+]
+    EN_MACRO(en_minus,  MINUS)         // disp:[-]
+    EN_MACRO(en_ast,    ASTERISK)      // disp:[*]
+    EN_MACRO(en_pct,    PERCENT)       // disp:[%]
+    EN_MACRO(en_dollar, DOLLAR)        // disp:[$]
+    EN_MACRO(en_tilde,  TILDE)         // disp:[~]
+    EN_MACRO(en_lpar,   LPAR)          // disp:[(]
+    EN_MACRO(en_rpar,   RPAR)          // disp:[)]
+    EN_MACRO(en_lbrc,   LEFT_BRACE)    // disp:[{]
+    EN_MACRO(en_rbrc,   RIGHT_BRACE)   // disp:[}]

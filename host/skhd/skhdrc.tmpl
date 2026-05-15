@@ -1,0 +1,27 @@
+# このファイルは skhdrc の元。編集後 ./render.sh を実行
+# 変数は render.sh で定義 → envsubst で ${VAR} を置換
+
+# ---- 共通コマンド定義 ----
+.define yabai_focus_prev : yabai -m query --spaces --space | jq -re ".index" | xargs -I{} yabai -m query --windows --space {} | jq -sre 'add | map(select(."is-minimized"==false)) | sort_by(.display, .frame.y, .frame.x, .id) | . as $array | length as $array_length | index(map(select(."has-focus"==true))) as $has_index | if $has_index > 0 then nth($has_index - 1).id else nth($array_length - 1).id end' | xargs -I{} yabai -m window --focus {}
+
+.define yabai_focus_next : yabai -m query --spaces --space | jq -re ".index" | xargs -I{} yabai -m query --windows --space {} | jq -sre 'add | map(select(."is-minimized"==false)) | sort_by(.display, .frame.y, .frame.x, .id) | . as $array | length as $array_length | index(map(select(."has-focus"==true))) as $has_index | if $array_length - 1 > $has_index then nth($has_index + 1).id else nth(0).id end' | xargs -I{} yabai -m window --focus {}
+
+# ---- バインド ----
+
+# 物理 C → タブ左
+${MODS_LL} - ${X_C} [
+    "Google Chrome"        : skhd -k "ctrl + shift - tab"
+    "Code"                 : skhd -k "cmd + shift - ${BRACKET_OPEN}"
+]
+
+# 物理 V → タブ右
+${MODS_LL} - ${X_V} [
+    "Google Chrome"        : skhd -k "ctrl - tab"
+    "Code"                 : skhd -k "cmd + shift - ${BRACKET_CLOSE}"
+]
+
+# 物理 D → yabai 前ウィンドウ
+${MODS_LL} - ${X_D} : @yabai_focus_prev
+
+# 物理 F → yabai 次ウィンドウ
+${MODS_LL} - ${X_F} : @yabai_focus_next

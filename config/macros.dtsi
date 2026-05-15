@@ -1,0 +1,46 @@
+// macros { } ブロック内に #include して使う
+// 数字 / 記号の eiji 系マクロ (en_*) は eiji_macros.dtsi をさらに #include
+
+    // ==== IME 切替 ====
+
+    // EIJI 切替 → 渡された base key を press/release。letter morph (al_*) の
+    // Shift 時に呼ばれ、英語入力モードに移してから大文字を出力する。
+    eiji_macro: eiji_macro {
+      compatible = "zmk,behavior-macro-one-param";
+      #binding-cells = <1>;
+      bindings = <&macro_tap &kp EIJI>, <&macro_param_1to1>, <&macro_press &kp MACRO_PLACEHOLDER>, <&macro_pause_for_release>, <&macro_param_1to1>, <&macro_release &kp MACRO_PLACEHOLDER>;
+    };
+    // かな入力へ切替 (combo_kana の ime_kana tap binding)
+    kana: kana {
+      compatible = "zmk,behavior-macro";
+      #binding-cells = <0>;
+      bindings = <&kp KANA>;
+    };
+    // 英数入力へ切替 (combo_eiji の ime_eiji tap binding / eiji_macro と併用)
+    eiji: eiji {
+      compatible = "zmk,behavior-macro";
+      #binding-cells = <0>;
+      bindings = <&kp EIJI>;
+    };
+
+    // ==== 親指 chord (TU_LL / TU_LM = layer + 同名修飾子を同時 hold) ====
+    //
+    // t_*_* が「layer 起動 → 修飾子 press」の順で発火するため、押下中の他キーは
+    // T_*_LAYER 経由で routed され、対応する *_kp マクロに届く。*_kp 側は
+    // base key に対し「右 4 修飾子のうち 3 つ」を付けて送出する (layer ごとに
+    // 欠ける 1 つが異なり、OS 側でレイヤーを識別できる)。
+    //   LL: RALT+RSHIFT+RCTRL  (RGUI なし)   LM: RGUI+RSHIFT+RCTRL (RALT なし)
+    //   RM: RGUI+RALT +RCTRL  (RSHIFT なし)  RR: RGUI+RALT +RSHIFT (RCTRL なし)
+
+    // TU_LL/TU_LM 実体: layer + 修飾子を同時 hold
+    TU_MOD(t_ll_ctrl, T_LL_LAYER, LCTRL)
+    TU_MOD(t_lm_alt,  T_LM_LAYER, LALT)
+
+    // 各 T_*_LAYER の chord: base key に「右 4 修飾子のうち 3 つ」を付けて送出。
+    // LL/LM は TU 側が hold した左修飾子を先に release して suppress する。
+    CHORD_KP_REL(ll_kp, LCTRL, RALT, RSHIFT, RCTRL)   // T_LL (RGUI なし)
+    CHORD_KP_REL(lm_kp, LALT,  RGUI, RSHIFT, RCTRL)   // T_LM (RALT なし)
+    CHORD_KP(rm_kp,            RGUI, RALT,  RCTRL)    // T_RM (RSHIFT なし)
+    CHORD_KP(rr_kp,            RGUI, RALT,  RSHIFT)   // T_RR (RCTRL なし)
+
+    #include "eiji_macros.dtsi"

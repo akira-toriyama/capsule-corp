@@ -1,0 +1,170 @@
+parse_config:
+  # config/keymap_defines.h で定義した #define を展開させる
+  preprocess: true
+  # `&kp X` 用に頻出キーの表示名を上書き
+  zmk_keycode_map:
+    # 修飾子
+    LEFT_SHIFT: ⇧
+    RIGHT_SHIFT: ⇧
+    LEFT_CONTROL: ⌃
+    RIGHT_CONTROL: ⌃
+    LEFT_ALT: ⌥
+    RIGHT_ALT: ⌥
+    LALT: ⌥
+    RALT: ⌥
+    LEFT_COMMAND: ⌘
+    RIGHT_COMMAND: ⌘
+    LEFT_GUI: ⌘
+    RIGHT_GUI: ⌘
+    # 編集系（フル/短縮 alias 両方）
+    RETURN: ⏎
+    RET: ⏎
+    ENTER: ⏎
+    BACKSPACE: ⌫
+    BSPC: ⌫
+    DELETE: ⌦
+    DEL: ⌦
+    ESCAPE: ⎋
+    ESC: ⎋
+    TAB: ⇥
+    SPACE: ␣
+    INSERT: Ins
+    INS: Ins
+    # 矢印
+    UP_ARROW: ↑
+    DOWN_ARROW: ↓
+    LEFT_ARROW: ←
+    RIGHT_ARROW: →
+    HOME: ⤒
+    END: ⤓
+    PAGE_UP: ⇞
+    PAGE_DOWN: ⇟
+    # NumPad 数字 (KP_NUMBER_* alias は本リポでは未使用なので省略)
+    KP_N0: '0'
+    KP_N1: '1'
+    KP_N2: '2'
+    KP_N3: '3'
+    KP_N4: '4'
+    KP_N5: '5'
+    KP_N6: '6'
+    KP_N7: '7'
+    KP_N8: '8'
+    KP_N9: '9'
+    # NumPad 記号
+    KP_PLUS: +
+    KP_MINUS: '-'
+    KP_ASTERISK: '*'
+    KP_SLASH: /
+    KP_DOT: .
+    KP_EQUAL: '='
+    KP_ENTER: ⏎
+    # システム/特殊
+    NON_US_BACKSLASH: \
+    NON_US_HASH: '#'
+    K_APPLICATION: ☰
+    APPLICATION: ☰
+    PRINTSCREEN: PrtSc
+    PAUSE_BREAK: Pause
+    # macOS の IME 切替 (combo_kana / combo_eiji が出力)
+    LANGUAGE_1: かな
+    LANGUAGE_2: 英数
+  # 自作 macro / mod-morph の include 元
+  zmk_additional_includes:
+    - config
+  zmk_combos: {}
+  # `&kp` 以外の binding の表示名。
+  # &en_* ブロックは config/eiji_macros.dtsi から自動生成 (下記マーカー間)。
+  # scripts/gen_eiji_drawer_map.py / CI verify-eiji-sync.yml で同期を担保。
+  raw_binding_map:
+    # ポインティング / システム
+    "&mkp MB1": 🖱L
+    "&mkp MB2": 🖱R
+    "&mkp MB3": 🖱M
+    "&msc SCRL_LEFT": ⟸
+    "&msc SCRL_RIGHT": ⟹
+    "&msc SCRL_UP": ⤊
+    "&msc SCRL_DOWN": ⤋
+    "&bootloader": ⚙ boot
+    # === AUTO-GENERATED (scripts/gen_eiji_drawer_map.py from config/eiji_macros.dtsi) — do not edit ===
+    # EIJI 切替 → 数字キー（NUMBER_LAYER 用）
+    "&en_0":      '0'
+    "&en_1":      '1'
+    "&en_2":      '2'
+    "&en_3":      '3'
+    "&en_4":      '4'
+    "&en_5":      '5'
+    "&en_6":      '6'
+    "&en_7":      '7'
+    "&en_8":      '8'
+    "&en_9":      '9'
+
+    # EIJI 切替 → 記号キー（SYMBOL1_LAYER 用）
+    "&en_under":  '_'
+    "&en_pipe":   '|'
+    "&en_amp":    '&'
+    "&en_excl":   '!'
+    "&en_q":      '?'
+    "&en_hash":   '#'
+    "&en_comma":  ','
+    "&en_dot":    '.'
+    "&en_semi":   ';'
+    "&en_colon":  ':'
+    "&en_at":     '@'
+    "&en_dq":     '"'
+    "&en_sq":     "'"
+    "&en_grave":  '`'
+    "&en_slash":  '/'
+    "&en_bsl":    '\'
+
+    # EIJI 切替 → 記号キー（SYMBOL2_LAYER 用）
+    "&en_caret":  '^'
+    "&en_lt":     '<'
+    "&en_gt":     '>'
+    "&en_lbkt":   '['
+    "&en_rbkt":   ']'
+    "&en_eq":     '='
+    "&en_plus":   '+'
+    "&en_minus":  '-'
+    "&en_ast":    '*'
+    "&en_pct":    '%'
+    "&en_dollar": '$'
+    "&en_tilde":  '~'
+    "&en_lpar":   '('
+    "&en_rpar":   ')'
+    "&en_lbrc":   '{'
+    "&en_rbrc":   '}'
+    # === END AUTO-GENERATED ===
+    # combo (ime_kana/ime_eiji の tap binding として呼ばれる)
+    "&kana": かな
+    "&eiji": 英数
+  # 修飾子関数の表記。arrow mod-morph (ar_*) は ALL_MODS
+  # (LGUI|LSFT|LCTL|LALT) を keep するため、keymap-drawer 上は左 4mod chain
+  # として現れる。これを Hyper+ に短縮 (Hyper = Ctrl+Alt+Cmd+Shift, macOS 慣習)。
+  modifier_fn_map:
+    left_ctrl: Ctl+
+    right_ctrl: Ctl+
+    left_shift: Sft+
+    right_shift: Sft+
+    left_alt: Alt+
+    right_alt: AltGr+
+    left_gui: Gui+
+    right_gui: Gui+
+    keycode_combiner: "{mods}{key}"
+    mod_combiner: "{mod_1}{mod_2}"
+    special_combinations:
+      "left_ctrl+left_alt+left_gui+left_shift": "Hyper+"
+      "left_ctrl+left_alt+left_shift": "Meh+"
+
+draw_config:
+  # 親指クラスタが横長なので、列をきつく詰めない
+  key_w: 56
+  key_h: 56
+  combo_w: 28
+  combo_h: 22
+  # combo 数が少ないので、別エリアでなく該当レイヤーへオーバーレイ
+  separate_combo_diagrams: false
+  # hold-tap の頭に "▼" を付ける等、見やすさ向上
+  arc_radius: 6
+  # SVG 内のフォント
+  svg_extra_style: |
+    text { font-family: -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif; }
