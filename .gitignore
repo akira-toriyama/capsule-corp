@@ -1,2 +1,14 @@
 # Claude Code のローカル設定（個人マシン固有の Bash 許可コマンド等）
 .claude/settings.local.json
+
+# scripts/build-local.sh のローカルビルド生成物
+/firmware/
+
+# vanilla west ローカルビルド生成物（west update / build で再生成可能）
+/.west/
+/zmk/
+/zmk-keyboards/
+/zephyr/
+/modules/
+/zmk-pmw3610-driver/
+/build/
