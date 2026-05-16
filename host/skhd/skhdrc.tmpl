@@ -8,22 +8,25 @@
 
 # ---- バインド ----
 
-# 物理 C → タブ左
+# 各バインド直前の `# doc: <動作>` は host/skhd/README.md の一覧生成の
+# 唯一ソース（scripts/gen-skhd-doc.py が読む）。バインド行自体は不変。
+
+# doc: タブを左へ（Chrome: Ctrl+Shift+Tab / VS Code: Cmd+Shift+[）
 ${ULTRA_LL} - ${X_C} [
     "Google Chrome"        : skhd -k "ctrl + shift - tab"
     "Code"                 : skhd -k "cmd + shift - ${BRACKET_OPEN}"
 ]
 
-# 物理 V → タブ右
+# doc: タブを右へ（Chrome: Ctrl+Tab / VS Code: Cmd+Shift+]）
 ${ULTRA_LL} - ${X_V} [
     "Google Chrome"        : skhd -k "ctrl - tab"
     "Code"                 : skhd -k "cmd + shift - ${BRACKET_CLOSE}"
 ]
 
-# 物理 D → yabai 前ウィンドウ
+# doc: 前のウィンドウへ（yabai フォーカス）
 ${ULTRA_LL} - ${X_D} : @yabai_focus_prev
 
-# 物理 F → yabai 次ウィンドウ
+# doc: 次のウィンドウへ（yabai フォーカス）
 ${ULTRA_LL} - ${X_F} : @yabai_focus_next
 
 # ---- emacs/readline 風 Ctrl+key remap ----
@@ -31,10 +34,17 @@ ${ULTRA_LL} - ${X_F} : @yabai_focus_next
 # 当時 ZMK で実装したものを skhd へ移植。Ctrl+A/E は原本で撤回済み (af6e6d6e)
 # かつ macOS Cocoa がネイティブ対応のため含めない。
 # Ctrl 単体のみ捕捉。Shift+Ctrl+key は skhd が拾わず素通り（パススルー）。
+# doc: ← Left
 ctrl - b : skhd -k "left"
+# doc: → Right
 ctrl - f : skhd -k "right"
+# doc: ↑ Up
 ctrl - p : skhd -k "up"
+# doc: ↓ Down
 ctrl - n : skhd -k "down"
+# doc: Backspace
 ctrl - h : skhd -k "backspace"
+# doc: 前方削除（Forward Delete）
 ctrl - d : skhd -k "delete"
+# doc: Return
 ctrl - j : skhd -k "return"
