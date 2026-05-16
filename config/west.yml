@@ -7,10 +7,15 @@ manifest:
     # Additional modules containing boards/shields/custom code can be listed here as well
     # See https://docs.zephyrproject.org/3.2.0/develop/west/manifest.html#projects
   projects:
+    # ZMK はタグ固定（main 追従しない）。ZMK 公式がカジュアル利用者に
+    # バージョン固定を推奨。更新時は .github/workflows/build.yml の
+    # build-user-config.yml@<tag> も同じタグに揃えること。
     - name: zmk
       remote: zmkfirmware
-      revision: main
+      revision: v0.3.0
       import: app/west.yml
+    # zmk-keyboards (Cyboard モジュール) はタグ運用が無いため main 追従。
+    # 既知の露出として許容（更新で挙動が変わり得る点に注意）。
     - name: zmk-keyboards
       remote: Cyboard-DigitalTailor
       revision: main
