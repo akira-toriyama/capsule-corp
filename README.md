@@ -46,7 +46,7 @@ build.yaml      ビルド対象（assimilator-bt × imprint_left / imprint_right
 boards/ zephyr/  ZMK board-root（ボード/シールドは Cyboard モジュール由来。空で正常）
 keymap-drawer/  keymap 図 SVG（draw-keymap CI が自動生成・コミット）
 host/skhd/      macOS skhd ブリッジ（render.sh, skhdrc.tmpl）
-scripts/        build-local.sh（Docker ビルド）, gen_eiji_drawer_map.py, hooks/
+scripts/        build-zmk.sh / render-skhd.sh（エントリ）, gen_eiji_drawer_map.py, hooks/
 docs/           コミット規約ほか
 .github/        CI（build / draw / verify-eiji-sync / commit-lint / shellcheck / release）
 ```
@@ -71,10 +71,10 @@ ZMK と上流ツールの制約で `config/` `boards/` `zephyr/module.yml` `buil
 ### ローカル（Docker）
 
 ```sh
-./scripts/build-local.sh                 # build.yaml の全ターゲット
-./scripts/build-local.sh imprint_left    # シールド指定
-./scripts/build-local.sh --update        # 依存を最新化（west update）
-./scripts/build-local.sh --clean         # キャッシュ破棄
+./scripts/build-zmk.sh                 # build.yaml の全ターゲット
+./scripts/build-zmk.sh imprint_left    # シールド指定
+./scripts/build-zmk.sh --update        # 依存を最新化（west update）
+./scripts/build-zmk.sh --clean         # キャッシュ破棄
 ```
 
 - 出力先: **`firmware/imprint_left.uf2`** / **`firmware/imprint_right.uf2`**
@@ -91,7 +91,7 @@ Actions の **Release** を手動起動 → コミットから次版を算出し
 ## skhd
 
 ```sh
-host/skhd/render.sh   # skhdrc を生成 → 検証 → ~/.config/skhd/skhdrc へ反映・reload
+./scripts/render-skhd.sh   # skhdrc を生成 → 検証 → ~/.config/skhd/skhdrc へ反映・reload
 ```
 
 clone 位置に依存しない。検証に失敗した設定は反映せず、稼働中の `skhdrc` を

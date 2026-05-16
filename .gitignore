@@ -2,5 +2,5 @@
 .claude/settings.local.json
 .claude/scheduled_tasks.lock
 
-# scripts/build-local.sh のローカルビルド生成物
+# scripts/build-zmk.sh のローカルビルド生成物
 /firmware/

@@ -46,7 +46,7 @@ build.yaml      Build targets (assimilator-bt × imprint_left / imprint_right)
 boards/ zephyr/  ZMK board-root (board/shield come from the Cyboard module; empty is normal)
 keymap-drawer/  keymap SVG (auto-generated & committed by the draw-keymap CI)
 host/skhd/      macOS skhd bridge (render.sh, skhdrc.tmpl)
-scripts/        build-local.sh (Docker build), gen_eiji_drawer_map.py, hooks/
+scripts/        build-zmk.sh / render-skhd.sh (entrypoints), gen_eiji_drawer_map.py, hooks/
 docs/           commit convention, etc.
 .github/        CI (build / draw / verify-eiji-sync / commit-lint / shellcheck / release)
 ```
@@ -71,10 +71,10 @@ Cyboard module; pinning is not possible — see [CLAUDE.md](CLAUDE.md)).
 ### Local (Docker)
 
 ```sh
-./scripts/build-local.sh                 # all targets in build.yaml
-./scripts/build-local.sh imprint_left    # a specific shield
-./scripts/build-local.sh --update        # refresh deps (west update)
-./scripts/build-local.sh --clean         # drop the cached workspace
+./scripts/build-zmk.sh                 # all targets in build.yaml
+./scripts/build-zmk.sh imprint_left    # a specific shield
+./scripts/build-zmk.sh --update        # refresh deps (west update)
+./scripts/build-zmk.sh --clean         # drop the cached workspace
 ```
 
 - Output: **`firmware/imprint_left.uf2`** / **`firmware/imprint_right.uf2`**
@@ -92,7 +92,7 @@ CHANGELOG is not auto-pushed to `main` (branch protection is respected).
 ## skhd
 
 ```sh
-host/skhd/render.sh   # generate → validate → deploy to ~/.config/skhd/skhdrc & reload
+./scripts/render-skhd.sh   # generate → validate → deploy to ~/.config/skhd/skhdrc & reload
 ```
 
 Location-independent. A config that fails validation is not deployed, so the
