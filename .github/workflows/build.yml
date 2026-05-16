@@ -1,4 +1,11 @@
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  # 週1の定期ビルド。ZMK は main 追従のため上流の破壊を早期検知する。
+  # 失敗時は GitHub がリポジトリオーナーへ自動通知（追加設定不要）。
+  schedule:
+    - cron: "0 3 * * 1" # 毎週月曜 03:00 UTC
 
 jobs:
   build:
