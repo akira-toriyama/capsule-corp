@@ -1,61 +1,116 @@
 # capsule-corp
 
+**日本語** | [English](README.en.md)
+
 入力デバイス設定の monorepo。
 
-- [Cyboard Imprint](https://cyboard.digital/products/imprint) の ZMK 設定（ルート = ZMK user-config）
-- [skhd.zig](https://github.com/jackielii/skhd.zig) の設定（`host/skhd/`）
+- **Cyboard Imprint** — ZMK ファームウェア設定（リポジトリルート = ZMK
+  user-config）。分割キーボード。修飾キーの組み合わせ（chord）を ZMK が送出する。
+- **skhd.zig** — macOS ホスト側ブリッジ（[`host/skhd/`](host/skhd/)）。ZMK が
+  送る chord を [skhd.zig](https://github.com/jackielii/skhd.zig) で受けて
+  macOS 操作へ変換する。
 
-ZMK が送る chord（親指ホールドで「右 4 修飾子のうち 3 つ」+ base key）を
-skhd 側で受けて処理する。両者の対応は `host/skhd/render.sh` がブリッジする。
+ZMK 側で修飾キー（modifier）＋ base key の chord を送り、host の skhd が
+解釈する。修飾キーは super / hyper / meta を意識した割り当て。両者の対応は
+[`host/skhd/render.sh`](host/skhd/render.sh) がテンプレートから `skhdrc` を
+生成・検証・反映してブリッジする。
 
-## ファイル構成
-
-| ファイル | 内容 |
-|---|---|
-| `config/imprint.keymap` | レイヤー定義（`#include` で各 dtsi を合成） |
-| `config/keymap_defines.h` | 集約ヘッダ → `layers.h` / `keypos.h` / `behaviors_gen.h` |
-| `config/{imprint_behaviors,letter_morphs,arrow_behaviors,macros,eiji_macros,combos}.dtsi` | behavior / macro / combo |
-| `keymap_drawer.config.yaml` | keymap-drawer 表示設定 |
-| `host/skhd/render.sh` | ZMK 論理定義 → skhd kVK へ変換し `~/.config/skhd/skhdrc` を生成 |
-| `host/skhd/skhdrc.tmpl` | skhd 設定テンプレート（`${VAR}` を render.sh が置換） |
-
-## firmware ビルド
-
-### GitHub Actions（推奨）
-
-push すると `.github/workflows/build.yml` が `.uf2` を生成。
-Actions の artifact からダウンロードして書き込む。ローカル環境構築不要。
-
-### Docker ローカルビルド（ツールチェーン不要）
-
-Zephyr toolchain を入れずに Docker でビルドする。`scripts/build-local.sh` が
-ZMK 公式イメージ内で west ワークスペースを構築する。
-
-```sh
-./scripts/build-local.sh              # build.yaml の全ターゲット
-./scripts/build-local.sh imprint_left # 指定シールドのみ
-./scripts/build-local.sh --update     # 依存を最新化（west update 強制）
-./scripts/build-local.sh --clean      # ワークスペース破棄
-# → firmware/{imprint_left,imprint_right}.uf2
+```mermaid
+flowchart LR
+  subgraph KB["キーボード (ZMK)"]
+    FW["imprint_left / imprint_right<br/>ZMK ファーム"]
+  end
+  subgraph MAC["macOS ホスト"]
+    SKHD["skhd.zig<br/>~/.config/skhd/skhdrc"]
+    ACT["macOS 操作"]
+  end
+  TMPL["skhdrc.tmpl"] -->|"render.sh: 生成・検証・反映"| SKHD
+  FW -->|"chord: 修飾キー + base key"| SKHD
+  SKHD -->|"解釈してマップ"| ACT
 ```
 
-- 依存（`zmk/` `zephyr/` `modules/`）は `~/.cache/zmk-capsule-corp` に永続化。
-  2 回目以降は `west update` を自動スキップしビルドのみ（数分）。
-- 実リポジトリを汚さないようキャッシュ領域へ複製してビルド。生成物は
-  `firmware/`（gitignore 済）。
-- 要 Docker（未起動なら `open -a Docker`）。`ZMK_WS` / `ZMK_IMAGE` で上書き可。
+## 環境構築
 
-## skhd セットアップ
-
-このリポジトリを clone した任意の場所から:
+クローン後、コミットメッセージ検証フックを有効化する（gitmoji +
+Conventional Commits を強制 / [docs/commit-convention.md](docs/commit-convention.md)）。
 
 ```sh
-host/skhd/render.sh   # ~/.config/skhd/skhdrc を生成・検証・reload
+git config core.hooksPath scripts/hooks
 ```
 
-clone 位置に依存しない。生成物（skhdrc）はリポジトリに残らず
-`~/.config/skhd/` へデプロイされる。壊れた設定は稼働中の skhdrc を上書きしない。
+## ディレクトリ構成
 
-## Keymap
+```
+config/         ZMK キーマップ / behaviors / combos / west.yml（ルート必須）
+build.yaml      ビルド対象（assimilator-bt × imprint_left / imprint_right）
+boards/ zephyr/  ZMK board-root（ボード/シールドは Cyboard モジュール由来。空で正常）
+keymap-drawer/  keymap 図 SVG（draw-keymap CI が自動生成・コミット）
+host/skhd/      macOS skhd ブリッジ（render.sh, skhdrc.tmpl）
+scripts/        build-local.sh（Docker ビルド）, gen_eiji_drawer_map.py, hooks/
+docs/           コミット規約ほか
+.github/        CI（build / draw / verify-eiji-sync / commit-lint / shellcheck / release）
+```
+
+ZMK と上流ツールの制約で `config/` `boards/` `zephyr/module.yml` `build.yaml`
+はリポジトリルート固定（移動しない）。詳細は [CLAUDE.md](CLAUDE.md)。
+
+## ZMK ファーム ビルド
+
+`config/imprint.keymap` 等を変更したら、以下のいずれかで `.uf2` を得る。
+ビルド対象は [build.yaml](build.yaml)（`assimilator-bt` × `imprint_left` /
+`imprint_right`）。ZMK 本体は `main` 追従（Cyboard モジュールが要求。タグ固定
+不可。詳細 [CLAUDE.md](CLAUDE.md)）。
+
+### GitHub Actions（環境構築不要）
+
+1. 変更を push（または PR を作成）
+2. GitHub の **Actions** タブ → 対象の `Build` run を開く
+3. run 下部の **Artifacts** から `firmware` を DL して解凍
+4. 中の `imprint_left` / `imprint_right` の `.uf2` を各ハーフへ書き込む
+
+### ローカル（Docker）
+
+```sh
+./scripts/build-local.sh                 # build.yaml の全ターゲット
+./scripts/build-local.sh imprint_left    # シールド指定
+./scripts/build-local.sh --update        # 依存を最新化（west update）
+./scripts/build-local.sh --clean         # キャッシュ破棄
+```
+
+- 出力先: **`firmware/imprint_left.uf2`** / **`firmware/imprint_right.uf2`**
+  （`.gitignore` 済）
+- 要 Docker。依存は `~/.cache/zmk-capsule-corp` に永続化（2 回目以降は高速）
+
+### リリース
+
+Actions の **Release** を手動起動 → コミットから次版を算出し、tag・
+`CHANGELOG.md`・GitHub Release（`imprint_*.uf2` 添付）を生成する
+（[docs/commit-convention.md](docs/commit-convention.md)）。
+
+## skhd
+
+```sh
+host/skhd/render.sh   # skhdrc を生成 → 検証 → ~/.config/skhd/skhdrc へ反映・reload
+```
+
+clone 位置に依存しない。検証に失敗した設定は反映せず、稼働中の `skhdrc` を
+壊さない。
+
+## keymap
+
+<details>
+<summary>キーマップ図を表示</summary>
 
 ![keymap](keymap-drawer/imprint.svg)
+
+</details>
+
+キーマップは [`config/imprint.keymap`](config/imprint.keymap)（各 `*.dtsi` を
+`#include`）。EIJI（英字入力）レイヤーは
+[`config/eiji_macros.dtsi`](config/eiji_macros.dtsi) を単一ソースとして
+`scripts/gen_eiji_drawer_map.py` が生成し、CI で同期を検証する。
+
+## 開発・ライセンス
+
+- コミット規約: **gitmoji + Conventional Commits**（[docs/commit-convention.md](docs/commit-convention.md)）
+- ライセンス: [MIT](LICENSE) © 2026 akira-toriyama
