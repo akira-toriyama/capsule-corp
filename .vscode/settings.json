@@ -2,6 +2,20 @@
   // 保存時にフォーマットを実行
   "editor.formatOnSave": true,
 
+  // 構文ハイライトの言語関連付け。
+  // - .keymap/.dtsi/.overlay: DeviceTree（要 plorefice.devicetree 拡張。
+  //   .vscode/extensions.json で推奨。未導入時はプレーンに graceful fallback）
+  // - skhdrc / .conf / commit-msg: 拡張不要のビルトイン言語で近似
+  "files.associations": {
+    "**/*.keymap": "devicetree",
+    "**/*.dtsi": "devicetree",
+    "**/*.overlay": "devicetree",
+    "**/*.conf": "properties",
+    "**/scripts/hooks/commit-msg": "shellscript",
+    "**/skhdrc.tmpl": "shellscript",
+    "**/skhdrc": "shellscript"
+  },
+
   // prettier が扱える言語のみ既定フォーマッタを prettier に固定。
   // .dtsi / .keymap / .conf / .sh / .py 等は対象外（別フォーマッタの領域）。
   "[markdown]": {
