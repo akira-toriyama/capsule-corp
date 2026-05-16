@@ -25,3 +25,16 @@ ${MODS_LL} - ${X_D} : @yabai_focus_prev
 
 # 物理 F → yabai 次ウィンドウ
 ${MODS_LL} - ${X_F} : @yabai_focus_next
+
+# ---- emacs/readline 風 Ctrl+key remap ----
+# 原本: akira-toriyama/cyboard-imprint-zmk#12 (commit f9b9b29a)。
+# 当時 ZMK で実装したものを skhd へ移植。Ctrl+A/E は原本で撤回済み (af6e6d6e)
+# かつ macOS Cocoa がネイティブ対応のため含めない。
+# Ctrl 単体のみ捕捉。Shift+Ctrl+key は skhd が拾わず素通り（パススルー）。
+ctrl - b : skhd -k "left"
+ctrl - f : skhd -k "right"
+ctrl - p : skhd -k "up"
+ctrl - n : skhd -k "down"
+ctrl - h : skhd -k "backspace"
+ctrl - d : skhd -k "delete"
+ctrl - j : skhd -k "return"

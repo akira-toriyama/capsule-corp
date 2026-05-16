@@ -32,10 +32,10 @@ export X_K=0x28
 export X_L=0x25
 export X_N=0x2D
 export X_M=0x2E
-export X_1=0x53
-export X_2=0x54
-export X_3=0x55
-export X_4=0x56
+export X_1=0x53 # Lの右
+export X_2=0x54 # UP_ARROW
+export X_3=0x55 # DELETE
+export X_4=0x56 # TAB
 
 # ---- ZMKで定義したmodifier セット ----
 export MODS_LL="rctrl + ralt + rshift"      # LL: RALT+RSHIFT+RCTRL (RGUI なし)
