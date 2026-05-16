@@ -1,0 +1,22 @@
+name: Assign PR
+
+# 開いた PR を毎回メンテナ（akira-toriyama）にアサインする。
+# Dependabot PR は GITHUB_TOKEN が read-only でこのジョブが失敗するため除外し、
+# そちらは .github/dependabot.yml の assignees で対応する。
+on:
+  pull_request:
+    types: [opened, reopened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  assign:
+    if: github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign maintainer
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: gh pr edit "$PR" --repo "$GITHUB_REPOSITORY" --add-assignee akira-toriyama
