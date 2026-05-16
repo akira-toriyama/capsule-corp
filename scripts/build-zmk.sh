@@ -2,10 +2,10 @@
 #
 # ZMK ファームウェアを Docker でローカルビルドする。
 #
-#   ./scripts/build-local.sh                 # build.yaml の全ターゲットをビルド
-#   ./scripts/build-local.sh imprint_left    # 指定シールドのみビルド
-#   ./scripts/build-local.sh --update        # west update を強制（依存を最新化）
-#   ./scripts/build-local.sh --clean         # ワークスペースを破棄して終了
+#   ./scripts/build-zmk.sh                 # build.yaml の全ターゲットをビルド
+#   ./scripts/build-zmk.sh imprint_left    # 指定シールドのみビルド
+#   ./scripts/build-zmk.sh --update        # west update を強制（依存を最新化）
+#   ./scripts/build-zmk.sh --clean         # ワークスペースを破棄して終了
 #
 # 仕組み:
 #   - west の clone 先（zmk/zephyr/modules, 約数 GB）がネットワークボリューム上の
