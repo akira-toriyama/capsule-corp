@@ -1,0 +1,53 @@
+name: Claude Code Review
+
+# PR を Claude が自動レビュー。
+# 前提（どちらか）:
+#   - リポジトリ管理者が Claude ターミナルで `/install-github-app` を実行
+#     （Claude GitHub App 導入＋必要 secret 設定）
+#   - もしくは Actions secret `ANTHROPIC_API_KEY` を設定
+# どちらも未設定なら本ジョブは失敗する（他 CI には影響しない）。
+# API 課金が発生する点に注意。
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    # draft PR はレビューしない（無駄な課金回避）
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Claude PR review
+        uses: anthropics/claude-code-action@v1
+        with:
+          prompt: |
+            この PR を日本語でレビューしてください。本リポジトリは
+            「入力デバイス設定の monorepo（ZMK キーボード user-config +
+            macOS skhd ブリッジ）」で、設計思想は低依存（Python stdlib /
+            shell、Node ランタイムを repo に持ち込まない）。
+
+            重点:
+            1. ZMK keymap/behavior/combo 変更の妥当性とビルド影響
+            2. shell スクリプト（host/skhd, scripts）の安全性・堅牢性
+            3. GitHub Actions ワークフローの正しさと供給網リスク
+            4. コミット規約 gitmoji + Conventional Commits 準拠
+               （docs/commit-convention.md）と semver 影響
+            5. 過剰実装の指摘（低依存思想に反する重量級依存の追加など）
+            6. 生成/ツール管理ファイルの手編集（CLAUDE.md 参照）
+
+            指摘は具体的・実行可能に。問題が無ければ簡潔に承認コメントを。
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
