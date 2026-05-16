@@ -85,8 +85,9 @@ Cyboard module; pinning is not possible — see [CLAUDE.md](CLAUDE.md)).
 ### Release
 
 Run the **Release** workflow manually → the next version is computed from
-commits; it creates a tag, `CHANGELOG.md`, and a GitHub Release with
-`imprint_*.uf2` attached ([docs/commit-convention.md](docs/commit-convention.md)).
+commits; it creates a `vX.Y.Z` tag and a GitHub Release (git-cliff-generated
+notes + `imprint_*.uf2`) ([docs/commit-convention.md](docs/commit-convention.md)).
+CHANGELOG is not auto-pushed to `main` (branch protection is respected).
 
 ## skhd
 

@@ -83,9 +83,10 @@ ZMK と上流ツールの制約で `config/` `boards/` `zephyr/module.yml` `buil
 
 ### リリース
 
-Actions の **Release** を手動起動 → コミットから次版を算出し、tag・
-`CHANGELOG.md`・GitHub Release（`imprint_*.uf2` 添付）を生成する
-（[docs/commit-convention.md](docs/commit-convention.md)）。
+Actions の **Release** を手動起動 → コミットから次版を算出し、`vX.Y.Z`
+タグ＋GitHub Release（git-cliff 生成ノート＋`imprint_*.uf2` 添付）を生成
+（[docs/commit-convention.md](docs/commit-convention.md)）。`main` 保護尊重の
+ため CHANGELOG は main へ自動 push しない。
 
 ## skhd
 
