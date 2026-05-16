@@ -15,7 +15,10 @@ jobs:
   draw:
     permissions:
       contents: write
-    uses: caksoylar/keymap-drawer/.github/workflows/draw-zmk.yml@main
+    # タグ固定（Dependabot github-actions が更新を追従）。
+    uses: caksoylar/keymap-drawer/.github/workflows/draw-zmk.yml@v0.23.0
     with:
       commit_message: ":bento: ci(keymap-drawer): SVG を更新"
       amend_commit: false
+      # keymap のパース/描画でエラーが出たら CI を落とす（壊れた keymap の早期検知）。
+      fail_on_error: true
