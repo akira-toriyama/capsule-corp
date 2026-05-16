@@ -13,21 +13,21 @@ ZMK が送る「修飾キーの組み合わせ（chord）＋ base key」を macO
 
 | 名前      | 構成                        | 備考 |
 | --------- | --------------------------- | ---- |
-| `MODS_LL` | 右 Ctrl + 右 Alt + 右 Shift |
-| `MODS_LM` | 右 Ctrl + 右 Cmd + 右 Shift |
-| `MODS_RM` | 右 Ctrl + 右 Cmd + 右 Alt   |
-| `MODS_RR` | 右 Cmd + 右 Alt + 右 Shift  |
+| `ULTRA_LL` | 右 Ctrl + 右 Alt + 右 Shift |
+| `MIRACLE_LM` | 右 Ctrl + 右 Cmd + 右 Shift |
+| `MEGA_RM` | 右 Ctrl + 右 Cmd + 右 Alt   |
+| `WONDER_RR` | 右 Cmd + 右 Alt + 右 Shift  |
 
 ## ショートカット一覧
 
-`skhdrc.tmpl` の現行バインド（`MODS_LL` ＝ 右 Ctrl+Alt+Shift を併用）:
+`skhdrc.tmpl` の現行バインド（`ULTRA_LL` ＝ 右 Ctrl+Alt+Shift を併用）:
 
 | ショートカット | 操作             | Google Chrome    | VS Code       | 既定                              |
 | -------------- | ---------------- | ---------------- | ------------- | --------------------------------- |
-| `LL + C`       | タブを左へ       | `Ctrl+Shift+Tab` | `Cmd+Shift+[` | —                                 |
-| `LL + V`       | タブを右へ       | `Ctrl+Tab`       | `Cmd+Shift+]` | —                                 |
-| `LL + D`       | 前のウィンドウへ | —                | —             | yabai: 前のウィンドウへフォーカス |
-| `LL + F`       | 次のウィンドウへ | —                | —             | yabai: 次のウィンドウへフォーカス |
+| `ULTRA_LL + C`       | タブを左へ       | `Ctrl+Shift+Tab` | `Cmd+Shift+[` | —                                 |
+| `ULTRA_LL + V`       | タブを右へ       | `Ctrl+Tab`       | `Cmd+Shift+]` | —                                 |
+| `ULTRA_LL + D`       | 前のウィンドウへ | —                | —             | yabai: 前のウィンドウへフォーカス |
+| `ULTRA_LL + F`       | 次のウィンドウへ | —                | —             | yabai: 次のウィンドウへフォーカス |
 
 ## emacs/readline 風 Ctrl+key remap
 

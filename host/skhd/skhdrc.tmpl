@@ -9,22 +9,22 @@
 # ---- バインド ----
 
 # 物理 C → タブ左
-${MODS_LL} - ${X_C} [
+${ULTRA_LL} - ${X_C} [
     "Google Chrome"        : skhd -k "ctrl + shift - tab"
     "Code"                 : skhd -k "cmd + shift - ${BRACKET_OPEN}"
 ]
 
 # 物理 V → タブ右
-${MODS_LL} - ${X_V} [
+${ULTRA_LL} - ${X_V} [
     "Google Chrome"        : skhd -k "ctrl - tab"
     "Code"                 : skhd -k "cmd + shift - ${BRACKET_CLOSE}"
 ]
 
 # 物理 D → yabai 前ウィンドウ
-${MODS_LL} - ${X_D} : @yabai_focus_prev
+${ULTRA_LL} - ${X_D} : @yabai_focus_prev
 
 # 物理 F → yabai 次ウィンドウ
-${MODS_LL} - ${X_F} : @yabai_focus_next
+${ULTRA_LL} - ${X_F} : @yabai_focus_next
 
 # ---- emacs/readline 風 Ctrl+key remap ----
 # 原本: akira-toriyama/cyboard-imprint-zmk#12 (commit f9b9b29a)。
