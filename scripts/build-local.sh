@@ -127,6 +127,7 @@ docker run --rm \
   -e TARGETS="$TARGETS" \
   "$IMAGE" bash -c '
 set -e
+git config --global --add safe.directory "*"  # bind mount の uid 不一致対策(Linux)
 if [ "$NEED_UPDATE" -eq 1 ]; then
   echo "=== west init/update ==="
   [ -d .west ] || west init -l config
