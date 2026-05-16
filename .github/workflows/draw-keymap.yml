@@ -17,5 +17,5 @@ jobs:
       contents: write
     uses: caksoylar/keymap-drawer/.github/workflows/draw-zmk.yml@main
     with:
-      commit_message: ":bento:`x.x.o`: keymap-drawer の SVG を更新"
+      commit_message: ":bento: ci(keymap-drawer): SVG を更新"
       amend_commit: false

@@ -1,0 +1,111 @@
+name: Release
+
+# 手動起動。gitmoji + Conventional Commits から次版を算出し、CHANGELOG 更新・
+# タグ・GitHub Release（imprint_*.uf2 添付）まで行う。
+# 規約: docs/commit-convention.md / 設定: cliff.toml
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      bumped: ${{ steps.calc.outputs.bumped }}
+      version: ${{ steps.calc.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute next version (git-cliff)
+        id: calc
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --bumped-version
+        # stdout に次版（例 v0.2.0）。前回 tag と同じなら bump 無し。
+
+      - name: Decide whether to release
+        id: decide
+        run: |
+          set -euo pipefail
+          NEXT="$(echo '${{ steps.calc.outputs.content }}' | tr -d '[:space:]')"
+          LAST="$(git tag --sort=-v:refname | head -n1)"
+          echo "next=$NEXT last=${LAST:-<none>}"
+          if [ -z "$NEXT" ] || [ "$NEXT" = "$LAST" ]; then
+            echo "bumped=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::リリース対象の型（feat/fix/perf/breaking）が無いため何もしません。"
+          else
+            echo "bumped=true"  >> "$GITHUB_OUTPUT"
+            echo "version=$NEXT" >> "$GITHUB_OUTPUT"
+          fi
+
+  release:
+    needs: version
+    if: needs.version.outputs.bumped == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate CHANGELOG + release notes
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --tag ${{ needs.version.outputs.version }} -o CHANGELOG.md
+      - name: Extract notes for this version
+        run: |
+          set -euo pipefail
+          npx --yes git-cliff@latest --config cliff.toml \
+            --tag '${{ needs.version.outputs.version }}' \
+            --unreleased --strip all > RELEASE_NOTES.md
+          test -s RELEASE_NOTES.md
+
+      - name: Commit CHANGELOG and tag
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          # chore(release) は bump 対象外（cliff.toml で skip）。
+          git commit -m ":bookmark: chore(release): ${VERSION}" || echo "no changelog change"
+          git tag -a "${VERSION}" -m "${VERSION}"
+          git push origin HEAD:"${GITHUB_REF_NAME}"
+          git push origin "${VERSION}"
+
+      - name: Build firmware (ZMK / west, Docker)
+        run: |
+          set -euo pipefail
+          docker run --rm -v "$PWD:/w" -w /w -e ZEPHYR_BASE=/w/zephyr \
+            zmkfirmware/zmk-build-arm:stable bash -ceu '
+              west init -l config
+              west update
+              west zephyr-export
+              mkdir -p artifacts
+              for SH in imprint_left imprint_right; do
+                west build -p -s zmk/app -d "build/$SH" -b assimilator-bt -- \
+                  -DSHIELD="$SH" -DZMK_CONFIG=/w/config
+                cp "build/$SH/zephyr/zmk.uf2" "artifacts/$SH.uf2"
+              done
+            '
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          gh release create "${VERSION}" \
+            --title "${VERSION}" \
+            --notes-file RELEASE_NOTES.md \
+            artifacts/imprint_left.uf2 artifacts/imprint_right.uf2
