@@ -1,4 +1,7 @@
 #!/bin/bash
+# envsubst へ渡すリテラルな ${VAR} を単一引用で保持する設計のため、
+# SC2016（単一引用内は非展開）は意図どおり。ファイル全体で無効化する。
+# shellcheck disable=SC2016
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -47,9 +50,12 @@ export BRACKET_CLOSE=0x1E  # ]
 
 
 # ---- skhdrc 生成 → 検証 → デプロイ ----
+# 対象は jackielii/skhd.zig (>= v0.1.1 を想定: --start-service は冪等、
+# 設定既定パスは ~/.config/skhd/skhdrc、専用の --check/dry-run フラグは無い)。
 # source (skhdrc.tmpl) は repo 内、生成物は ~/.config/skhd/skhdrc へ配置。
 # 一旦 temp に生成して検証し、OK の時だけデプロイ先へ移動する
 # (壊れた設定が稼働中の skhdrc を上書きしない)。
+# 注: skhd.zig は重複 binding (同一 "mods - key") をハードエラー扱いにする。
 OUT="$HOME/.config/skhd/skhdrc"
 
 # envsubst は指定変数のみ置換 (jq フィルタの $array 等を守るため)
@@ -61,15 +67,21 @@ tmp=$(mktemp)
 trap 'rm -f "$tmp"' EXIT
 envsubst "$VARS" < skhdrc.tmpl > "$tmp"
 
-errors=$(timeout 1 skhd -V -c "$tmp" 2>&1 | grep "error" || true)
-if [ -n "$errors" ]; then
-    echo "skhdrc has parse errors, NOT deploying:"
-    echo "$errors"
+# skhd.zig に dry-run は無いため短時間だけ前景起動しパース結果を見る。
+# rc=124 は timeout (= パース成功し run loop へ到達) を意味し正常。
+# それ以外の非0、または診断語を含む出力は不正としデプロイしない。
+if out=$(timeout 2 skhd -V -c "$tmp" 2>&1); then rc=0; else rc=$?; fi
+diag='error|invalid|unexpected|expected|failed|duplicate'
+if { [ "$rc" -ne 0 ] && [ "$rc" -ne 124 ]; } || printf '%s' "$out" | grep -iqE "$diag"; then
+    echo "skhdrc parse failed (rc=$rc), NOT deploying:" >&2
+    printf '%s\n' "$out" | grep -iE "$diag" >&2 || printf '%s\n' "$out" >&2
     exit 1
 fi
 
 mkdir -p "$(dirname "$OUT")"
+[ -f "$OUT" ] && cp "$OUT" "$OUT.bak"   # 直前の稼働設定を退避 (ロールバック用)
 mv "$tmp" "$OUT"
 trap - EXIT
-skhd --reload 2>/dev/null || skhd --restart-service
+# --reload は稼働中インスタンスへのシグナル。未起動時は restart→start で確実に。
+skhd --reload 2>/dev/null || skhd --restart-service 2>/dev/null || skhd --start-service
 echo "skhdrc deployed to $OUT and reloaded"

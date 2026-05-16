@@ -2,4 +2,5 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   build:
+    # ZMK は main 追従必須（理由は config/west.yml のコメント参照）。
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
