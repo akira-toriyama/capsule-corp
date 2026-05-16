@@ -2,6 +2,14 @@
   // 保存時にフォーマットを実行
   "editor.formatOnSave": true,
 
+  // skhdrc / 生成元テンプレートを shellscript 扱いで構文ハイライト。
+  // skhd 専用文法は無いが #コメント・${VAR}・埋め込みシェル(yabai/jq/skhd -k)
+  // が色付く。追加拡張は不要（低依存方針）。
+  "files.associations": {
+    "**/skhdrc.tmpl": "shellscript",
+    "**/skhdrc": "shellscript"
+  },
+
   // prettier が扱える言語のみ既定フォーマッタを prettier に固定。
   // .dtsi / .keymap / .conf / .sh / .py 等は対象外（別フォーマッタの領域）。
   "[markdown]": {
