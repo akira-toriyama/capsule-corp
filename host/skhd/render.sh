@@ -1,4 +1,7 @@
 #!/bin/bash
+# envsubst へ渡すリテラルな ${VAR} を単一引用で保持する設計のため、
+# SC2016（単一引用内は非展開）は意図どおり。ファイル全体で無効化する。
+# shellcheck disable=SC2016
 set -euo pipefail
 cd "$(dirname "$0")"
 
