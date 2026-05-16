@@ -20,7 +20,7 @@ jobs:
       bumped: ${{ steps.calc.outputs.bumped }}
       version: ${{ steps.calc.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -52,7 +52,7 @@ jobs:
     if: needs.version.outputs.bumped == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
