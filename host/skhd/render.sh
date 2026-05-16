@@ -38,10 +38,10 @@ export X_3=0x55 # DELETE
 export X_4=0x56 # TAB
 
 # ---- ZMKで定義したmodifier セット ----
-export MODS_LL="rctrl + ralt + rshift"      # LL: RALT+RSHIFT+RCTRL (RGUI なし)
-export MODS_LM="rctrl + rcmd + rshift"      # LM: RGUI+RSHIFT+RCTRL (RALT なし)
-export MODS_RM="rctrl + rcmd + ralt"        # RM: RGUI+RALT+RCTRL  (RSHIFT なし)
-export MODS_RR="rcmd + ralt + rshift"       # RR: RGUI+RALT+RSHIFT (RCTRL なし)
+export ULTRA_LL="rctrl + ralt + rshift"      # ULTRA_LL: RALT+RSHIFT+RCTRL (RGUI なし)
+export MIRACLE_LM="rctrl + rcmd + rshift"      # MIRACLE_LM: RGUI+RSHIFT+RCTRL (RALT なし)
+export MEGA_RM="rctrl + rcmd + ralt"        # MEGA_RM: RGUI+RALT+RCTRL  (RSHIFT なし)
+export WONDER_RR="rcmd + ralt + rshift"       # WONDER_RR: RGUI+RALT+RSHIFT (RCTRL なし)
 
 
 # ---- macOS 側の出力で使うキーコード ----
@@ -61,7 +61,7 @@ OUT="$HOME/.config/skhd/skhdrc"
 # envsubst は指定変数のみ置換 (jq フィルタの $array 等を守るため)
 VARS='${X_Q} ${X_W} ${X_E} ${X_R} ${X_T} ${X_A} ${X_S} ${X_D} ${X_F} ${X_G} ${X_Z} ${X_X} ${X_C} ${X_V} ${X_B}'
 VARS="$VARS "'${X_Y} ${X_U} ${X_I} ${X_O} ${X_P} ${X_H} ${X_J} ${X_K} ${X_L} ${X_N} ${X_M} ${X_1} ${X_2} ${X_3} ${X_4}'
-VARS="$VARS "'${BRACKET_OPEN} ${BRACKET_CLOSE} ${MODS_LL} ${MODS_LM} ${MODS_RM} ${MODS_RR}'
+VARS="$VARS "'${BRACKET_OPEN} ${BRACKET_CLOSE} ${ULTRA_LL} ${MIRACLE_LM} ${MEGA_RM} ${WONDER_RR}'
 
 tmp=$(mktemp)
 trap 'rm -f "$tmp"' EXIT
