@@ -61,6 +61,7 @@ jobs:
           set -euo pipefail
           docker run --rm -v "$PWD:/w" -w /w -e ZEPHYR_BASE=/w/zephyr \
             zmkfirmware/zmk-build-arm:stable bash -ceu '
+              git config --global --add safe.directory "*"
               west init -l config
               west update
               west zephyr-export
