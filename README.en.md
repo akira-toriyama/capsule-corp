@@ -97,6 +97,9 @@ host/skhd/render.sh   # generate → validate → deploy to ~/.config/skhd/skhdr
 Location-independent. A config that fails validation is not deployed, so the
 running `skhdrc` is never broken.
 
+Shortcut reference, modifier sets and update steps:
+[host/skhd/README.md](host/skhd/README.md).
+
 ## keymap
 
 <details>
