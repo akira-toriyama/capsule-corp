@@ -64,11 +64,15 @@ gitmoji 自体の公式 semver は
 ファームを実機確認してから「いま切る」と決めたときに実行する。
 
 1. Actions → `Release` → Run workflow
-2. git-cliff が前回 tag 以降の型から次版を算出
-3. `CHANGELOG.md` 更新コミット + `vX.Y.Z` tag を push
-4. ZMK ファームをビルドし `imprint_left.uf2` / `imprint_right.uf2` を
-   GitHub Release に添付
-5. リリース対象が「bump しない」型のみなら何もせず終了
+2. git-cliff が前回 tag 以降の型から次版を算出（`--bumped-version`）
+3. 「bump しない」型のみ／前回 tag と同版なら何もせず終了
+4. ZMK ファームをビルドし `imprint_left.uf2` / `imprint_right.uf2` を生成
+5. `vX.Y.Z` タグを作成・push し、git-cliff 生成ノート付きで GitHub Release
+   を作成（uf2 添付）
+
+`main` 保護を尊重するため **CHANGELOG を main へ自動 push しない**（タグ
+`refs/tags/*` は branch ルール対象外）。各版の変更履歴は GitHub Release の
+ノートを正とし、`CHANGELOG.md` は必要時にローカル/通常 PR で更新する。
 
 初期版は `v0.1.0`（[cliff.toml](../cliff.toml) の `initial_tag`）。
 
