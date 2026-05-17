@@ -4,8 +4,8 @@
 eiji_macros.dtsi の各 `EN_MACRO(name, KEY)  // disp:[X]` 行を唯一のソースとし、
 keymap_drawer.config.yaml 内の AUTO-GENERATED マーカー間を書き換える。
 
-  python3 scripts/gen_eiji_drawer_map.py          # 生成して yaml を更新
-  python3 scripts/gen_eiji_drawer_map.py --check   # 差分があれば exit 1 (CI 用)
+  python3 scripts/gen-eiji-drawer-map.py          # 生成して yaml を更新
+  python3 scripts/gen-eiji-drawer-map.py --check   # 差分があれば exit 1 (CI 用)
 
 stdlib のみ。リポジトリルートからの相対パスで動く。
 """
@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DTSI = ROOT / "config" / "eiji_macros.dtsi"
 YAML = ROOT / "keymap_drawer.config.yaml"
 
-BEGIN = "    # === AUTO-GENERATED (scripts/gen_eiji_drawer_map.py from config/eiji_macros.dtsi) — do not edit ==="
+BEGIN = "    # === AUTO-GENERATED (scripts/gen-eiji-drawer-map.py from config/eiji_macros.dtsi) — do not edit ==="
 END = "    # === END AUTO-GENERATED ==="
 
 SECTION_RE = re.compile(r"^\s*//\s*(EIJI 切替 →.*?（.*?_LAYER 用）)\s*$")
@@ -80,7 +80,7 @@ def main() -> int:
         if new != YAML.read_text(encoding="utf-8"):
             print(
                 "keymap_drawer.config.yaml が eiji_macros.dtsi と同期していません。\n"
-                "  python3 scripts/gen_eiji_drawer_map.py を実行してコミットしてください。",
+                "  python3 scripts/gen-eiji-drawer-map.py を実行してコミットしてください。",
                 file=sys.stderr,
             )
             return 1

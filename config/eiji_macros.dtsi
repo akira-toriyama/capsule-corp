@@ -4,7 +4,7 @@
 //
 // 各行末の `disp:[X]` が keymap-drawer 上の表示文字 (= 唯一のソース)。
 // keymap_drawer.config.yaml の raw_binding_map の en_* ブロックは
-// scripts/gen_eiji_drawer_map.py がこのファイルから自動生成する
+// scripts/gen-eiji-drawer-map.py がこのファイルから自動生成する
 // (CI: .github/workflows/verify-eiji-sync.yml が同期を検証)。
 // 追加・削除・リネーム時はこのファイルだけ編集し、スクリプトを再実行する。
 

@@ -7,13 +7,13 @@ on:
     paths:
       - config/eiji_macros.dtsi
       - keymap_drawer.config.yaml
-      - scripts/gen_eiji_drawer_map.py
+      - scripts/gen-eiji-drawer-map.py
       - .github/workflows/verify-eiji-sync.yml
   pull_request:
     paths:
       - config/eiji_macros.dtsi
       - keymap_drawer.config.yaml
-      - scripts/gen_eiji_drawer_map.py
+      - scripts/gen-eiji-drawer-map.py
   workflow_dispatch:
 
 jobs:
@@ -25,4 +25,4 @@ jobs:
         with:
           python-version: "3.x"
       - name: Check eiji_* mapping is in sync
-        run: python3 scripts/gen_eiji_drawer_map.py --check
+        run: python3 scripts/gen-eiji-drawer-map.py --check

@@ -15,7 +15,7 @@
 
 - [ ] コミットは gitmoji + Conventional Commits 準拠（`<:gitmoji:> type(scope): subject`）
 - [ ] keymap / behavior を変更した → ローカルビルド成功（`./scripts/build-zmk.sh`）
-- [ ] `config/eiji_macros.dtsi` を変更した → `python3 scripts/gen_eiji_drawer_map.py` を実行しコミット済（verify-eiji-sync 対策）
+- [ ] `config/eiji_macros.dtsi` を変更した → `python3 scripts/gen-eiji-drawer-map.py` を実行しコミット済（verify-eiji-sync 対策）
 - [ ] 生成・ツール管理ファイル（`keymap_drawer.config.yaml` の自動生成域 / `keymap-drawer/*` / `config/imprint.json`）を手編集していない
 - [ ] 必要なら docs / CLAUDE.md を更新
 - [ ] CI（build / commit-lint / shellcheck / draw / verify-eiji-sync）が緑

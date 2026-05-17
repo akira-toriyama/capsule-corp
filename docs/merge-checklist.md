@@ -5,7 +5,7 @@ PR: [#12](https://github.com/akira-toriyama/cyboard-imprint-zmk/pull/12)
 
 ## 自動検証（CI / ローカルで確認済み）
 
-- [x] Lint: `python3 scripts/gen_eiji_drawer_map.py --check` PASS（eiji\_\* mapping 同期済み）
+- [x] Lint: `python3 scripts/gen-eiji-drawer-map.py --check` PASS（eiji\_\* mapping 同期済み）
 - [x] ビルド: `nix develop --command just build imprint_left` PASS
       （FLASH 272956 B / RAM 71924 B — PR #12 ベースラインと完全一致）
 - [ ] ビルド: `imprint_right` も同様に通すこと
