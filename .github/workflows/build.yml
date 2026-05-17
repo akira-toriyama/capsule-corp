@@ -1,5 +1,9 @@
 on:
+  # PR は pull_request で、main は push で 1 回ずつビルド。push を main に
+  # 限定して「PR ブランチへの push が push と pull_request で二重ビルド」
+  # になる無駄を排除（無料枠でもコスト方針に沿う。CLAUDE.md 参照）。
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
   # 週1の定期ビルド。ZMK は main 追従のため上流の破壊を早期検知する。
