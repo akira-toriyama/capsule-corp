@@ -37,6 +37,10 @@ tag_pattern = "v[0-9]*"
 
 # 先頭 gitmoji を除去して Conventional パーサが型を読めるようにする。
 # 1) :code: 形式  2) 絵文字グリフ（先頭の非 ASCII ラン）。
+# 規約・commit-msg フック・commit-lint は :code: 形式のみ許可しグリフを弾くため
+# 通常 2) は発火しない。これは hook/lint を通らない経路（過去履歴・bot・GitHub
+# Web UI 編集など）でグリフ絵文字が混ざっても版算出を壊さないための防御。
+# 規約と矛盾ではなく、規約の網をすり抜けた入力への保険として意図的に残す。
 commit_preprocessors = [
   { pattern = '^:[\w-]+:\s*', replace = "" },
   { pattern = '^[^\x00-\x7F]+\s*', replace = "" },
