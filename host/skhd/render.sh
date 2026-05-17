@@ -67,10 +67,35 @@ tmp=$(mktemp)
 trap 'rm -f "$tmp"' EXIT
 envsubst "$VARS" < skhdrc.tmpl > "$tmp"
 
-# skhd.zig に dry-run は無いため短時間だけ前景起動しパース結果を見る。
-# rc=124 は timeout (= パース成功し run loop へ到達) を意味し正常。
+# skhd.zig に dry-run は無いため短時間だけ起動しパース結果を見る。
+# timeout は macOS 標準には無い (coreutils の timeout/gtimeout のみ)。
+# probe-skhd.sh と同じ思想で timeout の有無に依存しない: timeout→gtimeout
+# があれば使い、無ければ自前 sleep+kill で時間制限する。
+# rc=124 は時間切れ (= パース成功し run loop へ到達) を意味し正常。
 # それ以外の非0、または診断語を含む出力は不正としデプロイしない。
-if out=$(timeout 2 skhd -V -c "$tmp" 2>&1); then rc=0; else rc=$?; fi
+vout=$(mktemp)
+trap 'rm -f "$tmp" "$vout"' EXIT
+TO=""
+if command -v timeout >/dev/null 2>&1; then TO=timeout
+elif command -v gtimeout >/dev/null 2>&1; then TO=gtimeout
+fi
+if [ -n "$TO" ]; then
+    if "$TO" 2 skhd -V -c "$tmp" >"$vout" 2>&1; then rc=0; else rc=$?; fi
+else
+    # 自前の時間制限: バックグラウンド起動し 2 秒後に kill。
+    # 2 秒生存 = パース成功で run loop 到達とみなし rc=124 (time-out 相当)。
+    skhd -V -c "$tmp" >"$vout" 2>&1 &
+    sp=$!
+    sleep 2
+    if kill -0 "$sp" 2>/dev/null; then
+        kill "$sp" 2>/dev/null || true
+        wait "$sp" 2>/dev/null || true
+        rc=124
+    else
+        if wait "$sp" 2>/dev/null; then rc=0; else rc=$?; fi
+    fi
+fi
+out=$(cat "$vout")
 diag='error|invalid|unexpected|expected|failed|duplicate'
 if { [ "$rc" -ne 0 ] && [ "$rc" -ne 124 ]; } || printf '%s' "$out" | grep -iqE "$diag"; then
     echo "skhdrc parse failed (rc=$rc), NOT deploying:" >&2
@@ -79,7 +104,8 @@ if { [ "$rc" -ne 0 ] && [ "$rc" -ne 124 ]; } || printf '%s' "$out" | grep -iqE "
 fi
 
 mkdir -p "$(dirname "$OUT")"
-[ -f "$OUT" ] && cp "$OUT" "$OUT.bak"   # 直前の稼働設定を退避 (ロールバック用)
+[ -f "$OUT" ] && cp "$OUT" "$OUT.bak"   # 直前の稼働設定を .bak へ退避
+# 注: 検証は mv 前に済むため自動復元はしない。.bak は手動復旧用の置物。
 mv "$tmp" "$OUT"
 trap - EXIT
 # --reload は稼働中インスタンスへのシグナル。未起動時は restart→start で確実に。
