@@ -4,9 +4,16 @@ name: Release
 # 算出し、タグ + GitHub Release（git-cliff 生成ノート + imprint_*.uf2 添付）を
 # 作る。main 保護ルールを尊重するため CHANGELOG を main へ push しない
 # （タグ refs/tags/* は branch ルール対象外）。
+# dry_run=true は「版算出 + ノート + ビルド」まで行い artifact を上げるだけ。
+# タグ/Release を作らず版も消費しない＝完全プレビュー。
 # 規約: docs/commit-convention.md / 設定: cliff.toml
 on:
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "プレビューのみ（タグ/Release を作らず artifact だけ）"
+        type: boolean
+        default: false
 
 concurrency:
   group: release
@@ -73,10 +80,35 @@ jobs:
               done
             '
 
-      # タグ作成 + Release。タグ push は branch ルール対象外なので保護を
-      # 弱めずに動作する（CHANGELOG の main 直 push はしない）。
+      # dry_run: タグ/Release を作らず、ビルド成果物とノートを artifact として
+      # 上げる（版を消費しない＝完全プレビュー）。
+      - name: Upload preview (dry run)
+        if: steps.ver.outputs.release == 'true' && github.event.inputs.dry_run == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-preview-${{ steps.ver.outputs.version }}
+          path: |
+            artifacts/imprint_left.uf2
+            artifacts/imprint_right.uf2
+            RELEASE_NOTES.md
+
+      - name: Dry-run summary
+        if: steps.ver.outputs.release == 'true' && github.event.inputs.dry_run == 'true'
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          {
+            echo "## Dry run: ${VERSION}（タグ/Release は未作成）"
+            echo
+            echo '```'
+            cat RELEASE_NOTES.md
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # 通常実行（dry_run でない）: タグ作成 + GitHub Release。
+      # タグ push は branch ルール対象外なので保護を弱めずに動作する。
       - name: Create tag and GitHub Release
-        if: steps.ver.outputs.release == 'true'
+        if: steps.ver.outputs.release == 'true' && github.event.inputs.dry_run != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.ver.outputs.version }}
