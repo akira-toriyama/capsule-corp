@@ -20,26 +20,22 @@ ZMK が送る「修飾キーの組み合わせ（chord）＋ base key」を macO
 
 ## ショートカット一覧
 
-`skhdrc.tmpl` の現行バインド（`ULTRA_LL` ＝ 右 Ctrl+Alt+Shift を併用）:
+`skhdrc.tmpl` が唯一のソース。下表は `scripts/gen-skhd-doc.py` が自動生成し、
+CI `verify-skhd-doc` が同期を検証する（手動編集しない）。emacs 風 Ctrl は
+全アプリ共通・`Shift+Ctrl` はパススルー・`Ctrl+A/E` は非搭載（macOS ネイティブ）。
 
-| ショートカット | 操作             | Google Chrome    | VS Code       | 既定                              |
-| -------------- | ---------------- | ---------------- | ------------- | --------------------------------- |
-| `ULTRA_LL + C`       | タブを左へ       | `Ctrl+Shift+Tab` | `Cmd+Shift+[` | —                                 |
-| `ULTRA_LL + V`       | タブを右へ       | `Ctrl+Tab`       | `Cmd+Shift+]` | —                                 |
-| `ULTRA_LL + D`       | 前のウィンドウへ | —                | —             | yabai: 前のウィンドウへフォーカス |
-| `ULTRA_LL + F`       | 次のウィンドウへ | —                | —             | yabai: 次のウィンドウへフォーカス |
-
-## emacs/readline 風 Ctrl+key remap
-
-| キー     | 動作                       |
-| -------- | -------------------------- |
-| `Ctrl+B` | ← Left                     |
-| `Ctrl+F` | → Right                    |
-| `Ctrl+P` | ↑ Up                       |
-| `Ctrl+N` | ↓ Down                     |
-| `Ctrl+H` | Backspace                  |
-| `Ctrl+D` | 前方削除（Forward Delete） |
-| `Ctrl+J` | Return                     |
-
-> 一覧は [`skhdrc.tmpl`](skhdrc.tmpl) を正とする手動ドキュメント。バインドを
-> 増減したらこの表も更新する。
+<!-- AUTO-GENERATED (scripts/gen-skhd-doc.py from host/skhd/skhdrc.tmpl) — do not edit -->
+| ショートカット | 動作 |
+| --- | --- |
+| `ULTRA_LL + C` | タブを左へ（Chrome: Ctrl+Shift+Tab / VS Code: Cmd+Shift+[） |
+| `ULTRA_LL + V` | タブを右へ（Chrome: Ctrl+Tab / VS Code: Cmd+Shift+]） |
+| `ULTRA_LL + D` | 前のウィンドウへ（yabai フォーカス） |
+| `ULTRA_LL + F` | 次のウィンドウへ（yabai フォーカス） |
+| `Ctrl + B` | ← Left |
+| `Ctrl + F` | → Right |
+| `Ctrl + P` | ↑ Up |
+| `Ctrl + N` | ↓ Down |
+| `Ctrl + H` | Backspace |
+| `Ctrl + D` | 前方削除（Forward Delete） |
+| `Ctrl + J` | Return |
+<!-- END AUTO-GENERATED -->
