@@ -4,8 +4,8 @@
 // imprint.keymap の #define 集約ヘッダ
 //   layers.h        : レイヤー index
 //   keypos.h        : キー位置
-//   behaviors_gen.h : binding alias と behavior 生成マクロ
+//   behavior_macros.h : binding alias と behavior 生成マクロ（手書き）
 // ====================================================================
 #include "layers.h"
 #include "keypos.h"
-#include "behaviors_gen.h"
+#include "behavior_macros.h"

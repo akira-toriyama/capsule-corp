@@ -74,7 +74,7 @@ parse_config:
   zmk_combos: {}
   # `&kp` 以外の binding の表示名。
   # &en_* ブロックは config/eiji_macros.dtsi から自動生成 (下記マーカー間)。
-  # scripts/gen_eiji_drawer_map.py / CI verify-eiji-sync.yml で同期を担保。
+  # scripts/gen-eiji-drawer-map.py / CI verify-eiji-sync.yml で同期を担保。
   raw_binding_map:
     # ポインティング / システム
     "&mkp MB1": 🖱L
@@ -85,7 +85,7 @@ parse_config:
     "&msc SCRL_UP": ⤊
     "&msc SCRL_DOWN": ⤋
     "&bootloader": ⚙ boot
-    # === AUTO-GENERATED (scripts/gen_eiji_drawer_map.py from config/eiji_macros.dtsi) — do not edit ===
+    # === AUTO-GENERATED (scripts/gen-eiji-drawer-map.py from config/eiji_macros.dtsi) — do not edit ===
     # EIJI 切替 → 数字キー（NUMBER_LAYER 用）
     "&en_0":      '0'
     "&en_1":      '1'
