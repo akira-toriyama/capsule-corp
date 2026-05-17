@@ -1,12 +1,11 @@
 name: Release
 
 # 手動起動。コミット（gitmoji + Conventional Commits）から git-cliff が次版を
-# 算出し、タグ + GitHub Release（git-cliff 生成ノート + imprint_*.uf2 添付）を
-# 作る。main 保護ルールを尊重するため CHANGELOG を main へ push しない
-# （タグ refs/tags/* は branch ルール対象外）。
-# dry_run=true は「版算出 + ノート + ビルド」まで行い artifact を上げるだけ。
-# タグ/Release を作らず版も消費しない＝完全プレビュー。
-# 規約: docs/commit-convention.md / 設定: cliff.toml
+# 算出し、タグ＋「ドラフト」GitHub Release（git-cliff ノート + imprint_*.uf2）
+# を自動作成する。公開は手動（GitHub UI で内容確認のうえ Publish）。
+# main 保護のため CHANGELOG は main へ push しない（タグ refs/tags/* は対象外）。
+# dry_run=true は版算出+ノート+ビルドのみ＝タグ/Release を作らず版も消費しない
+# 完全プレビュー。規約: docs/commit-convention.md / 設定: cliff.toml
 on:
   workflow_dispatch:
     inputs:
@@ -105,9 +104,10 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      # 通常実行（dry_run でない）: タグ作成 + GitHub Release。
-      # タグ push は branch ルール対象外なので保護を弱めずに動作する。
-      - name: Create tag and GitHub Release
+      # 通常実行（dry_run でない）: タグ作成 + 「ドラフト」GitHub Release。
+      # 公開は手動（GitHub UI で内容確認のうえ Publish）。タグ push は
+      # branch ルール対象外なので保護を弱めずに動作する。
+      - name: Create tag and DRAFT GitHub Release
         if: steps.ver.outputs.release == 'true' && github.event.inputs.dry_run != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -118,7 +118,13 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git tag -a "$VERSION" -m "$VERSION"
           git push origin "$VERSION"
-          gh release create "$VERSION" \
+          url="$(gh release create "$VERSION" --draft \
             --title "$VERSION" \
             --notes-file RELEASE_NOTES.md \
-            artifacts/imprint_left.uf2 artifacts/imprint_right.uf2
+            artifacts/imprint_left.uf2 artifacts/imprint_right.uf2)"
+          echo "::notice::ドラフト Release を作成。内容確認のうえ手動 Publish: ${url}"
+          {
+            echo "## Draft Release ${VERSION} を作成（未公開）"
+            echo
+            echo "内容を確認のうえ手動で Publish: ${url}"
+          } >> "$GITHUB_STEP_SUMMARY"
