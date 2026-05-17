@@ -31,6 +31,8 @@ CI `verify-skhd-doc` が同期を検証する（手動編集しない）。emacs
 | `ULTRA_LL + V` | タブを右へ（Chrome: Ctrl+Tab / VS Code: Cmd+Shift+]） |
 | `ULTRA_LL + D` | 前のウィンドウへ（yabai フォーカス） |
 | `ULTRA_LL + F` | 次のウィンドウへ（yabai フォーカス） |
+| `ULTRA_LL + A` | AltTab 起動（全スペース。旧 cmd+ctrl+tab） |
+| `ULTRA_LL + S` | AltTab 起動（現スペース。旧 alt+tab） |
 | `Ctrl + B` | ← Left |
 | `Ctrl + F` | → Right |
 | `Ctrl + P` | ↑ Up |
