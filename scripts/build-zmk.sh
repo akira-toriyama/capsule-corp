@@ -40,20 +40,28 @@ for arg in "$@"; do
   case "$arg" in
     --clean)  echo "ワークスペースを削除: $WS"; rm -rf "$WS"; exit 0 ;;
     --update) FORCE_UPDATE=1 ;;
-    -h|--help) sed -n '2,20p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) awk 'NR>1 && /^#/{sub(/^# ?/,"");print;next} NR>1{exit}' "${BASH_SOURCE[0]}"; exit 0 ;;
     -*) echo "不明なオプション: $arg" >&2; exit 2 ;;
     *)  SHIELDS+=("$arg") ;;
   esac
 done
 
-# 引数指定が無ければ build.yaml の include から board/shield を抽出。
-# 形式:  - board: <b>
-#          shield: <s>
+# 引数指定が無ければ build.yaml の include: リストから board/shield を抽出。
+# 前提: ZMK 公式テンプレ準拠の include: リスト形式。
+#   include:
+#     - board: <b>
+#       shield: <s>      # board/shield の順は不問
+# 非対応: トップレベル board:/shield: 配列形式（その場合は引数でシールド指定）。
+# 各 "- " 要素を境界に board/shield を順不同で拾い、境界か EOF で確定する。
+# コメント行（先頭 #、テンプレ冒頭の board: 例を含む）は無視する。
 if [ ${#SHIELDS[@]} -eq 0 ]; then
   while IFS= read -r line; do SHIELDS+=("$line"); done < <(
     awk '
-      /^[[:space:]]*-[[:space:]]*board:/ { sub(/.*board:[[:space:]]*/,""); b=$0 }
-      /^[[:space:]]*shield:/             { sub(/.*shield:[[:space:]]*/,""); print b "\t" $0 }
+      /^[[:space:]]*#/ { next }
+      /^[[:space:]]*-[[:space:]]/ { if (b != "") print b "\t" s; b=""; s="" }
+      /^[[:space:]]*(-[[:space:]]*)?board:[[:space:]]/  { t=$0; sub(/.*board:[[:space:]]*/,  "", t); b=t }
+      /^[[:space:]]*(-[[:space:]]*)?shield:[[:space:]]/ { t=$0; sub(/.*shield:[[:space:]]*/, "", t); s=t }
+      END { if (b != "") print b "\t" s }
     ' build.yaml
   )
 else
