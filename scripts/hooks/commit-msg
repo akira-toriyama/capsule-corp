@@ -10,7 +10,7 @@
 
 msg_file="$1"
 # 1 行目（コメント行・空行を除く先頭）を取得
-subject="$(grep -vE '^\s*#' "$msg_file" | sed '/^[[:space:]]*$/d' | head -n1)"
+subject="$(grep -vE '^[[:space:]]*#' "$msg_file" | sed '/^[[:space:]]*$/d' | head -n1)"
 
 # Merge / Revert / fixup・squash は通す
 case "$subject" in

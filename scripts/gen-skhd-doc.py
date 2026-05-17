@@ -52,15 +52,29 @@ def chord(line: str) -> str:
 def build_block() -> str:
     rows: list[tuple[str, str]] = []
     pending: str | None = None
-    for raw in TMPL.read_text(encoding="utf-8").splitlines():
+    pending_ln = 0
+    for ln, raw in enumerate(TMPL.read_text(encoding="utf-8").splitlines(), 1):
         line = raw.strip()
         if m := DOC_RE.match(line):
+            if pending is not None:
+                print(
+                    f"warning: skhdrc.tmpl:{pending_ln} `# doc: {pending}` の直後に"
+                    f" バインドが無いまま {ln} 行目で次の doc 行。無視されます。",
+                    file=sys.stderr,
+                )
             pending = m.group(1)
+            pending_ln = ln
             continue
         if pending is None or not line or line.startswith((".define", "#")):
             continue
         rows.append((chord(line), pending))
         pending = None
+    if pending is not None:
+        print(
+            f"warning: skhdrc.tmpl:{pending_ln} `# doc: {pending}` の後に"
+            " バインドが無いまま終端。無視されます。",
+            file=sys.stderr,
+        )
     if not rows:
         raise SystemExit("skhdrc.tmpl: `# doc:` 付きバインドが見つからない")
     out = ["| ショートカット | 動作 |", "| --- | --- |"]
