@@ -66,7 +66,9 @@ if [ ${#SHIELDS[@]} -eq 0 ]; then
   )
 else
   # 引数はシールド名のみ。board は build.yaml の最初の board を使う。
-  BOARD="$(awk '/board:/{sub(/.*board:[[:space:]]*/,"");print;exit}' build.yaml)"
+  # コメント行（テンプレ冒頭の `# board: [ ... ]` 例を含む）は無視する。
+  # これを怠ると BOARD が `[ "nice_nano_v2" ]` 等になり -DBOARD=[ で失敗する。
+  BOARD="$(awk '/^[[:space:]]*#/{next} /board:[[:space:]]/{sub(/.*board:[[:space:]]*/,"");print;exit}' build.yaml)"
   _s=("${SHIELDS[@]}"); SHIELDS=()
   for s in "${_s[@]}"; do SHIELDS+=("$BOARD	$s"); done
 fi
