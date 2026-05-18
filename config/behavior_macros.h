@@ -96,6 +96,15 @@
 // name : ベース名 (例: ar_up → ar_up と ar_up_ht を生成)
 // LAYER, KEY : tap 時に潜るレイヤーと出力キー
 // P1, P2     : hold-trigger-key-positions に追加する 2 つの矢印キー位置
+//
+// mod-morph の分岐 (Ctrl/Alt ローリングタップ救済):
+//   - 修飾子なし / Shift / Cmd 押下 → name##_ht (hold-tap)。
+//     tap=矢印 / hold=矢印サブレイヤー (HOME/END/PgUp/PgDn)。Shift+HOME 等の
+//     範囲選択を維持するため Shift/Cmd ではサブレイヤーを残す。
+//   - Ctrl / Alt 押下 → &kp KEY を即時送出 (keep-mods で Ctrl/Alt を保持)。
+//     hold-tap は tap を「キーのリリース時」に送るため、ctrl↓ left↓ ctrl↑
+//     left↑ のロールでは矢印送出時に既に ctrl が離れ Left 単独になる。
+//     即時 &kp で押下時点に送ることで Ctrl+矢印 が成立する。
 #define ARROW_BEHAVIOR(name, LAYER, KEY, P1, P2) \
     name##_ht: name##_ht { \
       compatible = "zmk,behavior-hold-tap"; \
@@ -110,9 +119,9 @@
     name: name { \
       compatible = "zmk,behavior-mod-morph"; \
       #binding-cells = <0>; \
-      bindings = <&name##_ht LAYER KEY>, <&name##_ht LAYER KEY>; \
-      mods = <ALL_MODS>; \
-      keep-mods = <ALL_MODS>; \
+      bindings = <&name##_ht LAYER KEY>, <&kp KEY>; \
+      mods = <(MOD_LCTL|MOD_LALT)>; \
+      keep-mods = <(MOD_LCTL|MOD_LALT)>; \
     };
 
 // al_a 〜 al_z 系 letter mod-morph を生成。
