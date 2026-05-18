@@ -44,10 +44,6 @@ ${ULTRA_LL} - ${X_A} : @alttab_all_spaces
 ${ULTRA_LL} - ${X_S} : @alttab_current_space
 
 # ---- emacs/readline 風 Ctrl+key remap ----
-# 原本: akira-toriyama/cyboard-imprint-zmk#12 (commit f9b9b29a)。
-# 当時 ZMK で実装したものを skhd へ移植。Ctrl+A/E は原本で撤回済み (af6e6d6e)
-# かつ macOS Cocoa がネイティブ対応のため含めない。
-# Ctrl 単体のみ捕捉。Shift+Ctrl+key は skhd が拾わず素通り（パススルー）。
 # doc: ← Left
 ctrl - b : skhd -k "left"
 # doc: → Right
