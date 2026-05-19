@@ -58,3 +58,11 @@ ctrl - h : skhd -k "backspace"
 ctrl - d : skhd -k "delete"
 # doc: Return
 ctrl - j : skhd -k "return"
+
+# ---- 未定義キー効果音フォールバック ----
+# 4 修飾子セット (ULTRA_LL/MIRACLE_LM/MEGA_RM/WONDER_RR) で未バインドの
+# 全キーを押すとフィードバック音を鳴らす。実際のバインド行は render.sh が
+# envsubst 後に自動生成・追記する (実バインド済みの組合せは自動除外。
+# skhd.zig は重複 binding をハードエラーにするため手管理しない)。
+# 効果音ファイルは render.sh の SE_UNDEFINED で定義。ここには記述しない
+# (生成物にのみ現れる。# doc: 無し = README ショートカット表には載せない)。
