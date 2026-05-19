@@ -8,6 +8,8 @@ cd "$(dirname "$0")"
 # 変数定義（X_*/修飾子セット/BRACKET_*/SE_UNDEFINED）は別ファイルへ分離。
 # データ＝render-vars.sh / ロジック＝本ファイル。値の編集は render-vars.sh で完結。
 # shellcheck source=render-vars.sh
+# -x 無しの単体検査では source 先を追えない（CI は plain shellcheck）。
+# shellcheck disable=SC1091
 . ./render-vars.sh
 
 
