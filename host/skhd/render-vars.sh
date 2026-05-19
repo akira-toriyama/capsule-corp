@@ -46,6 +46,9 @@ export X_4=0x56 # TAB
 # 作らない）。空白区切りの変数名リスト。
 # （例: "X_1 X_2"）。単押し専用で別途実バインド済みのキー等、modset と
 # 組み合わせると紛らわしいものを列挙する。現状は除外対象なし。
+# render.sh が source して使う（envsubst 非対象で export しない設計のため
+# 単体検査では未使用に見える）。
+# shellcheck disable=SC2034
 FALLBACK_EXCLUDE_KEYS=""
 
 # ---- ZMKで定義したmodifier セット ----
@@ -73,4 +76,6 @@ export BRACKET_CLOSE=0x1E  # ]
 SOUND_DIR="${CAPSULE_SOUND_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/sounds}"
 # 命名は dotfiles の規約に合わせる: <event>.wav・アンダースコア区切り
 # （既存 window_focused.wav と同流儀。同一ディレクトリに混在するため）。
+# render.sh が source して使う（上記のとおり export しない設計）。
+# shellcheck disable=SC2034
 SE_UNDEFINED="$SOUND_DIR/undefined_key.wav"
